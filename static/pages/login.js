@@ -1,4 +1,5 @@
 import router from '../utils/router.js'
+import {mapState,mapGetters} from 'vuex'
 
 const Login = {
   template: `
@@ -9,9 +10,10 @@ const Login = {
         <div class="form-floating mb-3">
           <input type="email" v-model="email" class="form-control" placeholder="name@example.com">
           <label for="email">Email address</label>
-          <label>{{email}}</label>
+         
         </div>
-        <input type="password" v-model="password" class="form-control" placeholder="Password">
+        <div class="form-floating mb-3">
+        <input type="password" v-model="password" class="form-control" name="password" placeholder="Password">
         <label for="password">Password</label>
        
       </div>
@@ -45,34 +47,12 @@ const Login = {
         if (result.ok) {
           const data=await result.json();
           console.log(data);
-          router.push('/admin/dashboard')
+          router.push('/admin/main')
 
           }else{
             const errorMsg=await result.json();
             console.error('Login Falied : ', errorMsg);
           }
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
-    },
-
-    getUser() {
-      try {
-        const url = window.location.origin;
-        fetch(url + "/userlogin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: this.email, password: this.password }),
-          credentials:'same-origin',
-        })
-          .then((response) => {
-            if (response.ok) {
-              return response.json();
-            }
-          })
-          .then((data) => {
-            console.log(data);
-          });
       } catch (error) {
         console.error("Fetch error:", error);
       }

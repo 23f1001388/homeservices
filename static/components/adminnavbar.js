@@ -1,5 +1,5 @@
-const Navbar={
-  template:`<div class="container-fluid">
+const AdminNavbar={
+    template:`<div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light navbar-light">
       <div class="container-fluid">
         <router-link class="navbar-brand" to="/">A-Z</router-link>
@@ -34,15 +34,22 @@ const Navbar={
             
             <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg-end dropdown-menu-light">
               <div class="d-flex p-1">
-                <div class="flex-fill">
+                <div class="flex-fill border me-2">
                   <ul class="list-unstyled">
-                    <li><router-link class="dropdown-item fs-5" to="/login"><i class="bi bi-box-arrow-in-right"></i> Login</router-link></li>
+                    <li><h6 class="text-center">Login As</h6></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><h6 class="dropdown-item fs-5"><i class="bi bi-person-add"></i> Register</h6></li>
+                    <li><router-link class="dropdown-item" to="/login">Admin</router-link></li>
+                    <li><router-link class="dropdown-item" to="/login">Professional</router-link></li>
+                    <li><router-link class="dropdown-item" to="/login">Customer</router-link></li>
+                  </ul>
+                </div>
+                
+                <div class="flex-fill border ">
+                  <ul class="list-unstyled">
+                    <li><h6 class="text-center">Register As</h6></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><router-link class="dropdown-item fs-6" to="/register/professional">As Professional</router-link></li>
-                    <li><router-link class="dropdown-item fs-6" to="/register/customer">As Customer</router-link></li>
-                    <li><a class="dropdown-item fs-5" href="/logout"><i class="bi bi-box-arrow-in-right"></i> Logout</a></li>
+                    <li><router-link class="dropdown-item" to="/register/professional">Professional</router-link></li>
+                    <li><router-link class="dropdown-item" to="/register/customer">Customer</router-link></li>
                   </ul>
                 </div>
               </div>
@@ -52,9 +59,4 @@ const Navbar={
       </div>
     </nav>
     </div>`,
-
- 
-  
 }
-
-export default Navbar;
