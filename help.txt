@@ -1,0 +1,2 @@
+#For installing Virtual Environment
+Set-ExecutionPolicy -Scope Process Unrestricted

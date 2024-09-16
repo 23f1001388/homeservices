@@ -1,0 +1,9 @@
+flask
+flask_sqlalchemy
+flask_security_too
+flask_RESTful
+redis
+flask-caching
+argon2_cffi
+requests
+python-dotenv
