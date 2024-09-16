@@ -11,7 +11,6 @@ const Login = {
           <label for="email">Email address</label>
           <label>{{email}}</label>
         </div>
-      <div class="form-floating">
         <input type="password" v-model="password" class="form-control" placeholder="Password">
         <label for="password">Password</label>
        
