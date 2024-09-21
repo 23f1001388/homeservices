@@ -1,5 +1,10 @@
+import Navbar from '../components/navbar.js'
 const About={
   template:`
+  <div>
+        <Navbar/> 
+      </div>
+
   <div class="row justify-content-center">
    
         <h2 class="text-center">About Us</h2>
@@ -27,7 +32,10 @@ const About={
     </div>
   </div>
   
-  `
+  `,
+  components:{
+    Navbar,
+  },
 }
 
 export default About

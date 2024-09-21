@@ -34,7 +34,7 @@ class UserRole(db.Model):
 class Service(db.Model):
     __tablename__ = 'services'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(10), unique=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     timerequired = db.Column(db.Integer, nullable=False)

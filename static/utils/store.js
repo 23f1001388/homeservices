@@ -4,7 +4,7 @@ const store=Vuex.createStore({
         current_user:null,
         role:""
     },
-    mutation:{
+    mutations:{
         setUser(state,user){
             state.loggedIn=true;
             state.current_user=user;
@@ -12,6 +12,7 @@ const store=Vuex.createStore({
         clearUser(state){
             state.loggedIn=false;
             state.current_user=null;
+            state.role="";
         },
         setRole(state,role){
             state.role=role;

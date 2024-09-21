@@ -1,2 +1,4 @@
 #For installing Virtual Environment
 Set-ExecutionPolicy -Scope Process Unrestricted
+#For Activating Virtual Environment
+.\.venv\Scripts\Activate

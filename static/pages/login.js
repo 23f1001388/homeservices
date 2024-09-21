@@ -1,12 +1,17 @@
 import router from '../utils/router.js'
-import {mapState,mapGetters} from 'vuex'
+import Navbar from '../components/navbar.js'
 
 const Login = {
   template: `
+    <div>
+        <Navbar/> 
+      </div>
     <div class="row justify-content-center p-5">
     <div class="col-md-4 shadow-lg border p-2">
-    <div class="p-3">
-      <h4 class="text-center">User Login</h4>
+      <div class="p-3">
+        <h4 class="text-center">User Login</h4>
+        <div class="badge text-danger alert fs-6" v-show="errormessage">{{errormessage}}</div>
+        
         <div class="form-floating mb-3">
           <input type="email" v-model="email" class="form-control" placeholder="name@example.com">
           <label for="email">Email address</label>
@@ -32,7 +37,11 @@ const Login = {
     return {
       email: "",
       password: "",
+      errormessage:"",
     };
+  },
+  components:{
+    Navbar,
   },
   methods: {
     async userLogin() {
@@ -46,15 +55,22 @@ const Login = {
         });
         if (result.ok) {
           const data=await result.json();
+          sessionStorage.setItem('id',data.id);
+          sessionStorage.setItem('email',data.email);
+          sessionStorage.setItem('token',data.token);
+          sessionStorage.setItem('role',data.role)
           console.log(data);
+          this.$store.commit('setUser',data)
           router.push('/admin/main')
 
           }else{
             const errorMsg=await result.json();
+            this.errormessage=errorMsg.message;
             console.error('Login Falied : ', errorMsg);
           }
       } catch (error) {
         console.error("Fetch error:", error);
+        this.errormessage="Error Occured";
       }
     },
   },

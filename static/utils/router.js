@@ -5,6 +5,8 @@ import Login from '../pages/login.js'
 import RegisterCustomer from '../pages/registercustomer.js'
 import RegisterProfessional from '../pages/registerprofessional.js'
 import AdminMain from '../pages/admin/adminmain.js'
+import ServiceCreate from '../pages/admin/servicecreate.js'
+
 
 const router=VueRouter.createRouter({
   history: VueRouter.createWebHistory(),
@@ -15,7 +17,8 @@ const router=VueRouter.createRouter({
     {path:'/login',component:Login},
     {path:'/register/customer',component:RegisterCustomer},
     {path:'/register/professional',component:RegisterProfessional},
-    {path:'/admin/main',component:AdminMain}
+    {path:'/admin/main',component:AdminMain},
+    {path:'/admin/service/create',component:ServiceCreate},
     
     ]
 });

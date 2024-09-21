@@ -1,5 +1,10 @@
+import Navbar from "../components/navbar.js";
+
 const RegisterProfessional={
   template:`
+  <div>
+        <Navbar/> 
+      </div>
     <div class="row justify-content-center p-3">
     <div class="col-md-4 shadow-lg border p-2">
     <div class="p-2">
@@ -54,6 +59,9 @@ const RegisterProfessional={
     </div>
     </div>
   `,
+  components:{
+    Navbar,
+  },
   data(){
     return{
       email:"",

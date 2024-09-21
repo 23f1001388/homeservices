@@ -1,6 +1,11 @@
+import Navbar from '../components/navbar.js'
+
 const Home={
   template:
-    `<div class="row mt-3 justify-content-center">
+    `<div>
+        <Navbar/> 
+      </div>
+    <div class="row mt-3 justify-content-center">
         <div class="col-md-4 shadow-lg p-3 mb-5 ms-3 bg-body-tertiary rounded vh-100">
             <h4 class="text-center">Home Services at DoorStep</h4>
             <div class="row mt-3 p-2">
@@ -71,6 +76,9 @@ const Home={
    return{
      ipadd:''
    }
+ },
+ components:{
+    Navbar,
  },
  mounted(){
    this.getLocation();

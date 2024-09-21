@@ -1,5 +1,10 @@
+import Navbar from "../components/navbar.js"
+
 const RegisterCustomer={
   template:`
+    <div>
+        <Navbar/> 
+      </div>
     <div class="row justify-content-center p-5">
     <div class="col-md-4 shadow-lg border p-2">
     <div class="p-3">
@@ -40,7 +45,10 @@ const RegisterCustomer={
        </div>
     </div>
     </div>
-  `
+  `,
+  components:{
+    Navbar,
+  },
 }
 
 export default RegisterCustomer

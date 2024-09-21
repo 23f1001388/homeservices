@@ -2,30 +2,29 @@ const AdminNavbar={
     template:`<div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light navbar-light">
       <div class="container-fluid">
-        <router-link class="navbar-brand" to="/">A-Z</router-link>
+        <router-link class="navbar-brand fs-3" to="/admin/dashboard">ADMIN</router-link>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <router-link to='/' class="nav-link active" aria-current="page">Home</router-link>
+              <router-link to='/admin/dashboard' class="nav-link active" aria-current="page">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link to='/about' class="nav-link">About</router-link>
+              <router-link to='/admin/search' class="nav-link">Search</router-link>
             </li>
             <li class="nav-item">
-              <router-link to='/contact' class="nav-link" >Contact</router-link>
+              <router-link to='/admin/summary' class="nav-link" >Summary</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to='/logout' class="nav-link" >Logout</router-link>
             </li>
            
           </ul>
-         
-         <form class="d-flex">
-         <div class="input-group">
-         <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-           <button class="btn btn-primary me-2" type="submit">Search</button>
-           </div>
-         </form>
+          <ul class="navbar-nav ms-auto me-3">
+            <li>Welcome: {{current_user.email }}</li>
+          </ul>
          
          <div class="dropdown">
             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -33,30 +32,21 @@ const AdminNavbar={
             </button>
             
             <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg-end dropdown-menu-light">
-              <div class="d-flex p-1">
-                <div class="flex-fill border me-2">
                   <ul class="list-unstyled">
-                    <li><h6 class="text-center">Login As</h6></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><router-link class="dropdown-item" to="/login">Admin</router-link></li>
-                    <li><router-link class="dropdown-item" to="/login">Professional</router-link></li>
-                    <li><router-link class="dropdown-item" to="/login">Customer</router-link></li>
+                    <li><router-link class="dropdown-item" to="/login">Logout</router-link></li>
+                    <li><router-link class="dropdown-item" to="/login">Profile</router-link></li>
                   </ul>
-                </div>
-                
-                <div class="flex-fill border ">
-                  <ul class="list-unstyled">
-                    <li><h6 class="text-center">Register As</h6></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><router-link class="dropdown-item" to="/register/professional">Professional</router-link></li>
-                    <li><router-link class="dropdown-item" to="/register/customer">Customer</router-link></li>
-                  </ul>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
     </nav>
     </div>`,
+    computed:{
+      current_user(){
+          return this.$store.state.current_user;
+      }
+  },
 }
+
+export default AdminNavbar;

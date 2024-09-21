@@ -5,7 +5,6 @@ import store from '../static/utils/store.js'
 const app=Vue.createApp({
   template:`
   <div>
-    <Navbar/> 
     <router-view/>
   </div>`,
   

@@ -1,5 +1,10 @@
+import Navbar from '../components/navbar.js'
+
 const Contact = {
   template: `
+  <div>
+        <Navbar/> 
+      </div>
   <div class="container">
     <div class="row mt-3 p-5">
       <div class="col-md-5 shadow-lg me-2">
@@ -33,5 +38,8 @@ const Contact = {
   </div>
   
   `,
+  components:{
+    Navbar,
+  },
 };
 export default Contact;

@@ -27,17 +27,17 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     password=data.get('password')
 
     if not email or not password:
-      return {'message': 'Valid email and Password required'}
+      return jsonify({'message': 'Valid email and Password required'}),404
     
     user=user_datastore.find_user(email=email)
     
     if not user:
-      return {'message': 'User not Registered. Please register.'}
+      return jsonify({'message': 'User not Registered. Please register.'}),404
     
     if verify_password(password,user.password):
-      return {'token':user.get_auth_token(),'role':user.roles[0].name,'id' : user.id, 'email' : user.email }, 200
+      return jsonify({'token':user.get_auth_token(),'role':user.roles[0].name,'id' : user.id, 'email' : user.email }), 200
     else:
-      return {'message' : 'Wrong password'}
+      return jsonify({'message' : 'Wrong password'}),404
 
 
   @app.route('/register/professional',methods=['POST'])
@@ -56,6 +56,6 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
 
     if not email or not password or not name :
       message={'message': 'Some fields are blank'}
-      return message
+      return message,404
     message={'email':email,'password':password}
     return message,200
