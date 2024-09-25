@@ -1,9 +1,9 @@
-import AdminNavbar from "../../components/adminnavbar.js";
+import ProfessionalNavbar from "../../components/professionalnavbar.js";
 
-const AdminMain = {
+const ProfessionalDashboard = {
     template: `
     <div>
-        <AdminNavbar/>
+        <ProfessionalNavbar/>
     </div>
     <div class="row justify-content-center">
         <div class="col-md-6 text-center">
@@ -32,7 +32,7 @@ const AdminMain = {
         }
     },
     components: {
-        AdminNavbar,
+        ProfessionalNavbar,
     },
     mounted() {
         this.getServices();
@@ -67,4 +67,4 @@ const AdminMain = {
     },
 }
 
-export default AdminMain;
+export default ProfessionalDashboard;

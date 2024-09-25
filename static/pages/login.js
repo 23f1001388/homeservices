@@ -10,7 +10,7 @@ const Login = {
     <div class="col-md-4 shadow-lg border p-2">
       <div class="p-3">
         <h4 class="text-center">User Login</h4>
-        <div class="badge text-danger alert fs-6" v-show="errormessage">{{errormessage}}</div>
+        <div class="alert alert-danger fs-6" v-show="errormessage">{{errormessage}}</div>
         
         <div class="form-floating mb-3">
           <input type="email" v-model="email" class="form-control" placeholder="name@example.com">
@@ -61,7 +61,18 @@ const Login = {
           sessionStorage.setItem('role',data.role)
           console.log(data);
           this.$store.commit('setUser',data)
-          router.push('/admin/main')
+          this.$store.commit('setRole',data.role)
+          // router.push('/admin/main')
+          switch(data.role){
+            case 'admin':
+              router.push('/admin/dashboard');
+              break;
+            case 'professional':
+              router.push('/professional/dashboard');
+              break;
+            case 'customer':
+              router.push('/customer/dashboard')
+          }
 
           }else{
             const errorMsg=await result.json();

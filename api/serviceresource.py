@@ -24,7 +24,7 @@ service_fields={
 class ServiceAPI(Resource):
     @marshal_with(service_fields)
     def get(self):
-        allserivces=Service.query.all()
+        allservices=Service.query.all()
         if allservices is None:
             return jsonify({'message':'No Service Found'}),404
         return allservices,200

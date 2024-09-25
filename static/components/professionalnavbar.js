@@ -1,4 +1,5 @@
-const CustomerNavbar={
+
+const ProfessionalNavbar={
     template:`<div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light navbar-light">
       <div class="container-fluid">
@@ -49,4 +50,4 @@ const CustomerNavbar={
   },
 }
 
-export default CustomerNavbar;
+export default ProfessionalNavbar;
