@@ -1,11 +1,12 @@
 from flask import request,render_template_string,render_template,jsonify
 from flask_security import SQLAlchemyUserDatastore,auth_required,roles_required,roles_accepted,current_user,verify_password,logout_user
-
+from application.models import User
 
 def createViews(app,user_datastore:SQLAlchemyUserDatastore):
   @app.route('/')
   def index():
-    return render_template('index.html')
+    users=User.query.all()
+    return render_template('index.html',users=users)
 
   @app.route('/getlocation')
   def get_location():

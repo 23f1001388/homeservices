@@ -29,7 +29,6 @@ class ServiceAPI(Resource):
             return jsonify({'message':'No Service Found'}),404
         return allservices,200
     
-    @marshal_with(service_fields)
     def post(self):
         args=create_service_parser.parse_args()
         name=args.get("name")
@@ -41,15 +40,15 @@ class ServiceAPI(Resource):
         if not name or not description or not price or not timerequired:
             return jsonify({'message':'required Paramters are missing'}),404
         
-        # exists=Service.query.filter_by(name=name).first()
+        exists=Service.query.filter_by(name=name).first()
         
-        # if exists:
+        if exists:
             return jsonify({'message':"Service alreday exists"}),404
         
         newService=Service(name=name,description=description,price=price,timerequired=timerequired)
         db.session.add(newService)
         db.session.commit()
-        return jsonify({'message':"Service successfully Created"}),200
+        return jsonify({'message':"Service successfully Created"}),201
         
         
 api.add_resource(ServiceAPI,'/serviceapi')

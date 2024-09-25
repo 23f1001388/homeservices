@@ -14,8 +14,12 @@ class Config:
   
 class LocalDevelopmentConfig(Config):
   DEBUG = True
-  SQLITE_DB_DIR = os.path.join(basedir, '../',os.getenv('DB_DIRECTORY'))
-  SQLALCHEMY_DATABASE_URI ='sqlite:///' + os.path.join(SQLITE_DB_DIR, '/',os.getenv('DATABASE'))
-  SECRET_KEY = os.getenv('SECRET_KEY')
-  SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
+  SQLITE_DB_DIR = os.path.join(basedir, '../database')
+  # SQLALCHEMY_DATABASE_URI ='sqlite:///' + os.path.join(SQLITE_DB_DIR, 'database.db')
+  # SQLALCHEMY_DATABASE_URI ='sqlite:///' + os.path.join(SQLITE_DB_DIR, '/',os.getenv('DATABASE'))
+  SQLALCHEMY_TRACK_MODIFICATIONS = False
+  SECURITY_PASSWORD_SALT = 'saltypassword'
+  SECRET_KEY="myflasksecret"
+  SQL_DB_DIR = os.path.join(basedir, '../database')
+  SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(SQLITE_DB_DIR, 'database.db')
  

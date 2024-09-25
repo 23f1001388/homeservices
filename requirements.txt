@@ -7,3 +7,4 @@ flask-caching
 argon2_cffi
 requests
 python-dotenv
+flask_cors
