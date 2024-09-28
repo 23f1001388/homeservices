@@ -12,9 +12,9 @@ import CustomerDashboard from '../pages/customers/customerdashboard.js'
 import store from './store.js'
 
 const routes=[
-  {path:'/',component:Home},
-  {path:'/about',component:About},
-  {path:'/contact',component:Contact},
+  {path:'/',name:'Home',component:Home},
+  {path:'/about',name:'About',component:About},
+  {path:'/contact',name:'Contact',component:Contact},
   {path:'/login',component:Login},
   {path:'/register/customer',component:RegisterCustomer},
   {path:'/register/professional',component:RegisterProfessional},
@@ -30,19 +30,24 @@ const router=VueRouter.createRouter({
   routes,
 });
 
-router.beforeEach((to,from,next)=>{
-  if (to.matched.some((record) => record.meta.requiresLogin)) {
-    if (!store.state.loggedIn) {
-      next({ path: "/login" });
-    } else if (to.meta.role && to.meta.role !== store.state.role) {
-      next({ path: "/" });
-    } else {
-      next();
-    }
-  } else {
-    next();
-  }
-})
+// router.beforeEach((to,from,next)=>{
+//   if (to.matched.some((record) => record.meta.requiresLogin)) {
+//     if (!store.state.loggedIn) {
+//       next({ path: "/login" });
+//     } else if (to.meta.role && to.meta.role !== store.state.role) {
+//       next({ path: "/" });
+//     } else {
+//       next();
+//     }
+//   } else {
+//     next();
+//   }
+// });
 
+router.beforeEach((to,from,next)=>{
+  console.log(to);
+  console.log(from);
+  next();
+})
 
 export default router;

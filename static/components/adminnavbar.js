@@ -33,8 +33,8 @@ const AdminNavbar={
             
             <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg-end dropdown-menu-light">
                   <ul class="list-unstyled">
-                    <li><router-link class="dropdown-item" to="/login">Logout</router-link></li>
-                    <li><router-link class="dropdown-item" to="/login">Profile</router-link></li>
+                    <li><button class="dropdown-item" @click="logout">Logout</button></li>
+                    <li><router-link class="dropdown-item" to="/profile">Profile</router-link></li>
                   </ul>
             </div>
           </div>
@@ -42,6 +42,11 @@ const AdminNavbar={
       </div>
     </nav>
     </div>`,
+    methods:{
+      logout(){
+        this.$store.commit('clearUser');
+      }
+    },
     computed:{
       current_user(){
           return this.$store.state.current_user;
