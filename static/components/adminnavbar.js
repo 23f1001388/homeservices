@@ -1,3 +1,5 @@
+import router from "../utils/router.js";
+
 const AdminNavbar={
     template:`<div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light navbar-light">
@@ -45,6 +47,8 @@ const AdminNavbar={
     methods:{
       logout(){
         this.$store.commit('clearUser');
+        // sessionStorage.removeItem('user');
+        router.push('/');
       }
     },
     computed:{

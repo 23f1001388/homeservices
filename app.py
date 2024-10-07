@@ -9,8 +9,10 @@ from application.views import createViews
 from flask_cors import CORS
 from api.serviceresource import api
 
+
+
 def createApp():
-    app = Flask(__name__)
+    app = Flask(__name__,template_folder='templates', static_folder='dist', static_url_path='')
     app.config.from_object(LocalDevelopmentConfig)
      # configure token
     # app.config['WTF_CSRF_CHECK_DEFAULT'] =False
@@ -31,6 +33,7 @@ def createApp():
     return app
 
 app=createApp()
+
 
 
 if __name__ == '__main__':

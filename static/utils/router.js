@@ -11,43 +11,46 @@ import ProfessionalDashboard from '../pages/professionals/professionaldashboard.
 import CustomerDashboard from '../pages/customers/customerdashboard.js'
 import store from './store.js'
 
-const routes=[
-  {path:'/',name:'Home',component:Home},
-  {path:'/about',name:'About',component:About},
-  {path:'/contact',name:'Contact',component:Contact},
-  {path:'/login',component:Login},
-  {path:'/register/customer',component:RegisterCustomer},
-  {path:'/register/professional',component:RegisterProfessional},
-  {path:'/admin/dashboard',component:AdminDashboard,meta:{requiresLogin:true,role:'admin'}},
-  {path:'/admin/service/create',component:ServiceCreate},
-  {path:'/professional/dashboard',component:ProfessionalDashboard,meta:{requiresLogin:true,role:'professional'}},
-  {path:'/customer/dashboard',component:CustomerDashboard,meta:{requiresLogin:true,role:'customer'}},
-  
-  ]
+const routes = [
+  { path: '/', name: 'Home', component: Home },
+  { path: '/about', name: 'About', component: About },
+  { path: '/contact', name: 'Contact', component: Contact },
+  { path: '/login', component: Login },
+  { path: '/register/customer', component: RegisterCustomer },
+  { path: '/register/professional', component: RegisterProfessional },
+  { path: '/admin/dashboard', component: AdminDashboard, meta: { requiresLogin: true, role: 'admin' } },
+  { path: '/admin/service/create', component: ServiceCreate, meta: { requiresLogin: true, role: 'admin' } },
+  { path: '/professional/dashboard', component: ProfessionalDashboard, meta: { requiresLogin: true, role: 'professional' } },
+  { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'cus  tomer' } },
 
-const router=VueRouter.createRouter({
+]
+
+const router = VueRouter.createRouter({
   history: VueRouter.createWebHistory(),
+  mode:'history',
   routes,
 });
 
-// router.beforeEach((to,from,next)=>{
-//   if (to.matched.some((record) => record.meta.requiresLogin)) {
-//     if (!store.state.loggedIn) {
-//       next({ path: "/login" });
-//     } else if (to.meta.role && to.meta.role !== store.state.role) {
-//       next({ path: "/" });
-//     } else {
-//       next();
-//     }
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
 
-router.beforeEach((to,from,next)=>{
-  console.log(to);
-  console.log(from);
-  next();
+  const user=JSON.parse(sessionStorage.getItem('user'));
+  const token=user ? user.token: null;
+  const role=user ? user.role: null;
+  // const user_data=JSON.parse(sessionStorage.getItem('user'));
+  // console.log(user);
+  if (user) {
+      store.commit('setUser',user);
+      store.commit('setRole',user.role);
+      store.commit('setLoggedIn',true);
+    }
+
+  if(to.meta.requiresLogin){
+    if(!token){
+      next({path:'/login'})
+    }else{next()};
+  }else{next()}
 })
+
+
 
 export default router;

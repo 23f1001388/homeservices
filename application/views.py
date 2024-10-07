@@ -1,12 +1,20 @@
-from flask import request,render_template_string,render_template,jsonify
+from flask import request,render_template_string,render_template,jsonify,send_from_directory
 from flask_security import SQLAlchemyUserDatastore,auth_required,roles_required,roles_accepted,current_user,verify_password,logout_user
 from application.models import User
+import requests
 
 def createViews(app,user_datastore:SQLAlchemyUserDatastore):
-  @app.route('/')
-  def index():
-    users=User.query.all()
-    return render_template('index.html',users=users)
+
+  @app.route('/static/<path:path>')
+  def static_proxy(path):
+    return send_from_directory(app.static_folder, path)
+
+  @app.route('/', defaults={'path': ''})
+  @app.route('/<path:path>')
+  # @app.route('/')
+  def index(path):
+    # users=User.query.all()
+    return render_template('index.html')
 
   @app.route('/getlocation')
   def get_location():
@@ -16,6 +24,7 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     return location_data
   
   @app.route('/logout')
+  @auth_required
   def logout():
     logout_user()
     return render_template('index.html')
@@ -48,11 +57,11 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     password=data.get('password')
     name=data.get('name')
     service=data.get(service)
-    experience=get(experience),
-    address=get(address),
-    pincode=get(pincode),
-    contact=get(contact),
-    fileupload=get(fileupload)
+    experience=data.get(experience),
+    address=data.get(address),
+    pincode=data.get(pincode),
+    contact=data.get(contact),
+    fileupload=data.get(fileupload)
     message=""
 
     if not email or not password or not name :

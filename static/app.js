@@ -13,3 +13,4 @@ app.component('Navbar',Navbar);
 app.use(router);
 app.use(store);
 app.mount("#app");
+

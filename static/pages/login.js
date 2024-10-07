@@ -55,14 +55,14 @@ const Login = {
         });
         if (result.ok) {
           const data=await result.json();
-          sessionStorage.setItem('id',data.id);
-          sessionStorage.setItem('email',data.email);
-          sessionStorage.setItem('token',data.token);
-          sessionStorage.setItem('role',data.role)
+          sessionStorage.setItem('user',JSON.stringify(data));
           console.log(data);
-          this.$store.commit('setUser',data)
-          this.$store.commit('setRole',data.role)
+          this.$store.commit('setUser',data);
+          this.$store.commit('setRole',data.role);
+          this.$store.commit('setLoggedIn',true);
           // router.push('/admin/main')
+          console.log("User Role is:"+ data.role);
+
           switch(data.role){
             case 'admin':
               router.push('/admin/dashboard');
