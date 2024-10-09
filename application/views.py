@@ -5,15 +5,13 @@ import requests
 
 def createViews(app,user_datastore:SQLAlchemyUserDatastore):
 
-  @app.route('/static/<path:path>')
-  def static_proxy(path):
-    return send_from_directory(app.static_folder, path)
+  # @app.route('/static/<path:path>')
+  # def static_proxy(path):
+  #   return send_from_directory(app.static_folder, path)
 
   @app.route('/', defaults={'path': ''})
   @app.route('/<path:path>')
-  # @app.route('/')
   def index(path):
-    # users=User.query.all()
     return render_template('index.html')
 
   @app.route('/getlocation')
