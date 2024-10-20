@@ -116,6 +116,8 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     contact = request.form.get('contact')
     fileupload = request.files.get('file')
 
+    print(service)
+    
     if not email or not password or not name or not address or not pincode or not contact or not service or not experience or not fileupload :
       return jsonify({'message': 'Some fields are blank'}),404
     else:
@@ -129,7 +131,7 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
           # file_path = os.path.join(basedir,'/uploads/',fileupload.filename)
           print(upload_directory,file_path)
           fileupload.save(file_path)
-          newProfessional=Professional(email=email,name=name,address=address,pincode=pincode,contact=contact,service_type=service,experience=experience,filepath=file_path)
+          newProfessional=Professional(email=email,name=name,address=address,pincode=pincode,contact=contact,service_type=[service],experience=experience,filepath=file_path)
           if createUser(user_datastore,email,password,'professional'):
             db.session.add(newProfessional)
             db.session.commit()

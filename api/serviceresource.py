@@ -13,12 +13,13 @@ create_service_parser.add_argument('description',type=str)
 create_service_parser.add_argument('price',type=float)
 create_service_parser.add_argument('timerequired',type=int)
 
-service_fields={
+
+service_fields = {
     'id': fields.Integer,
-    'name':fields.String,
+    'name': fields.String,
     'description': fields.String,
-    'price':fields.Float,
-    'timerequired':fields.Integer
+    'price': fields.Float,
+    'timerequired': fields.Integer
 }
 
 class ServiceAPI(Resource):
