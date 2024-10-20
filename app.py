@@ -8,7 +8,8 @@ from flask_security import SQLAlchemyUserDatastore
 from application.views import createViews
 from flask_cors import CORS
 from api.serviceresource import api
-
+from flask_mail import Message,Mail
+from application.mailing import *
 
 
 def createApp():
@@ -33,7 +34,7 @@ def createApp():
     return app
 
 app=createApp()
-
+# mail=Mail(app)
 
 
 if __name__ == '__main__':

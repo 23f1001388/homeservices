@@ -48,7 +48,7 @@ class ServiceAPI(Resource):
         newService=Service(name=name,description=description,price=price,timerequired=timerequired)
         db.session.add(newService)
         db.session.commit()
-        return jsonify({'message':"Service successfully Created"}),201
+        return jsonify({'message':"Service successfully Created"}),200
         
         
 api.add_resource(ServiceAPI,'/serviceapi')

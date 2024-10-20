@@ -2,9 +2,11 @@ flask
 flask_sqlalchemy
 flask_security_too
 flask_RESTful
+celery
 redis
 flask-caching
 argon2_cffi
 requests
 python-dotenv
 flask_cors
+flask-Mail

@@ -36,8 +36,7 @@ router.beforeEach((to, from, next) => {
   const user=JSON.parse(sessionStorage.getItem('user'));
   const token=user ? user.token: null;
   const role=user ? user.role: null;
-  // const user_data=JSON.parse(sessionStorage.getItem('user'));
-  // console.log(user);
+
   if (user) {
       store.commit('setUser',user);
       store.commit('setRole',user.role);

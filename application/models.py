@@ -55,6 +55,7 @@ class Professional(db.Model):
     contact = db.Column(db.String(20), nullable=False)
     creationdate = db.Column(db.DateTime, default=datetime.now())
     experience = db.Column(db.Integer, nullable=False)
+    filepath=db.Column(db.String,nullable=False)
     service_type = db.Relationship('Service', secondary='service_professionals')
     active = db.Column(db.Boolean)
     servicerequests = db.Relationship(
@@ -70,13 +71,14 @@ class ServiceProfessional(db.Model):
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'))
 
 
-class Cutomer(db.Model):
+class Customer(db.Model):
     __tablename__ = 'customers'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
     name = db.Column(db.String(10), unique=True, nullable=False)
     address = db.Column(db.String(500), nullable=False)
     pincode = db.Column(db.Integer, nullable=False)
+    contact = db.Column(db.String(20), nullable=False)
     active = db.Column(db.Boolean)
     servicerequests = db.Relationship(
         'ServiceRequest', backref='customers',

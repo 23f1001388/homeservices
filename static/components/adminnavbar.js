@@ -36,6 +36,7 @@ const AdminNavbar={
             <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg-end dropdown-menu-light">
                   <ul class="list-unstyled">
                     <li><button class="dropdown-item" @click="logout">Logout</button></li>
+                    <li><button class="dropdown-item" @click="sendEmail">Send Mail</button></li>
                     <li><router-link class="dropdown-item" to="/profile">Profile</router-link></li>
                   </ul>
             </div>
@@ -49,7 +50,29 @@ const AdminNavbar={
         this.$store.commit('clearUser');
         // sessionStorage.removeItem('user');
         router.push('/');
-      }
+      },
+      async sendEmail() {
+        try {
+          const url = window.location.origin;
+          const result=await fetch(url + "/sendemail", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ to: "tlsetia@gmail.com", subject: "Subjetc Test Mail",body:"Test Message" }),
+            credentials:'same-origin',
+          });
+          if (result.ok) {
+            const data=await result.json();
+            console.log(data);
+            }else{
+              const errorMsg=await result.json();
+              this.errormessage=errorMsg.message;
+              console.error('Mail Falied : ', errorMsg);
+            }
+        } catch (error) {
+          console.error("Fetch error:", error);
+          this.errormessage="Error Occured";
+        }
+      },
     },
     computed:{
       current_user(){
