@@ -5,26 +5,6 @@ const ProfessionalDashboard = {
     <div>
         <ProfessionalNavbar/>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
-            <router-link to="/admin/service/create" class="btn btn-primary"> <i class="bi bi-plus-circle"></i> Add Service</router-link>
-            <button @click="getServices" class="btn btn-primary">Get Services</button>
-        </div>
-    </div>
-    <div class="row cols-2">
-        <div class="col" v-for="service in allServices" :key="service.id">
-            <div class="card">
-                <div class="card-header">
-                        <h3>{{ service.name }}</h3>
-                </div>
-                <div class="card-body">
-                        <p>Description: {{ service.description }}</p>
-                        <p>Price (in Rs.): {{ service.price }}</p>
-                        <p>Time Required: {{ service.timerequired }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
     `,
     data() {
         return {

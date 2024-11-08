@@ -34,7 +34,7 @@ const routes = [
   { path: '/professional/dashboard', component: ProfessionalDashboard, meta: { requiresLogin: true, role: 'professional' } },
 
   // Customer Routes
-  { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'cus  tomer' } },
+  { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'customer' } },
 
 ]
 
@@ -59,8 +59,25 @@ router.beforeEach((to, from, next) => {
   if(to.meta.requiresLogin){
     if(!token){
       next({path:'/login'})
-    }else{next()};
-  }else{next()}
+    }else{
+      if(to.meta.role===role){
+        next();
+      }else{
+        if (role === 'admin') {
+          next({ path: '/admin/dashboard' });
+        } else if (role === 'professional') {
+          next({ path: '/professional/dashboard' });
+        } else if (role === 'customer') {
+          next({ path: '/customer/dashboard' });
+        } else {
+          // If the role is invalid or doesn't exist, redirect to login page
+          next({ path: '/login' });      
+      }
+    }
+  }
+  }else{
+    next()
+  }
 })
 
 
