@@ -25,6 +25,11 @@ const RegisterProfessional = {
           <input type="text" v-model="name" class="form-control" id="name" name="name" placeholder="Full Name" required>
           <label for="name">Full Name</label>
         </div>
+
+        <div class="form-floating mt-3">
+          <input type="text" v-model="description" class="form-control" id="description" name="description" placeholder="Full Description" required>
+          <label for="description">Full Description</label>
+        </div>
         
         <div class="form-floating mt-3">
         <select class="form-select" v-model="selectedService" id="service" aria-label="service" name="service">
@@ -79,8 +84,9 @@ const RegisterProfessional = {
       email: '',
       password: '',
       name: '',
+      description:'',
       services: [],
-      selectedservice: [],
+      selectedservice: '',
       experience: '',
       address: '',
       pincode: '',
@@ -156,9 +162,11 @@ const RegisterProfessional = {
       formData.append('email', this.email);
       formData.append('password', this.password);
       formData.append('name', this.name);
-      const services = Array.isArray(this.selectedService) ? this.selectedService.join(',') : '';
+      formData.append('description', this.description);
+      // const services = Array.isArray(this.selectedService) ? this.selectedService.join(',') : '';
+
       console.log("Selected Services:", this.selectedService);
-      formData.append('service', services);
+      formData.append('service', this.selectedService);
       // formData.append('service', this.selectedService.join(','));
       formData.append('experience', this.experience);
       formData.append('address', this.address);
@@ -177,8 +185,8 @@ const RegisterProfessional = {
         this.errormessage="Update Successfully"; 
       }else{
         const errorMsg = await result.json();
-        console.log("Updation  Failed : ", errorMsg);
-        this.errormessage="Updation  Failed";
+        console.log("Updation  Failed : ", errorMsg.message);
+        this.errormessage="Updation  Failed" + errorMsg.message;
       }
     },
     

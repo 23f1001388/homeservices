@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
-    roles = db.Relationship('Role', secondary='user_roles', backref='user')
+    roles = db.Relationship('Role', secondary='users_roles', backref='user')
     active = db.Column(db.Boolean)
     timestamp = db.Column(db.DateTime, default=datetime.now())
 
@@ -23,9 +23,14 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(10), unique=True, nullable=False)
     description = db.Column(db.String(50), nullable=False)
 
+# roles_users = db.Table('roles_users',
+#     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+#     db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
+# )
 
 class UserRole(db.Model):
-    __tablename__ = 'user_roles'
+    __tablename__ = 'users_roles'
+    extend_existing=True
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
@@ -43,7 +48,6 @@ class Service(db.Model):
         lazy=True)  # One to Many Relationship with ServiceRequests
     timestamp = db.Column(db.DateTime, default=datetime.now())
 
-
 class Professional(db.Model):
     __tablename__ = 'professionals'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -56,20 +60,18 @@ class Professional(db.Model):
     creationdate = db.Column(db.DateTime, default=datetime.now())
     experience = db.Column(db.Integer, nullable=False)
     filepath=db.Column(db.String,nullable=False)
-    service_type = db.Relationship('Service', secondary='service_professionals')
-    active = db.Column(db.Boolean)
+    services = db.Relationship('Service', secondary='service_professionals',backref='professionals')
+    active = db.Column(db.Boolean,default="True")
     servicerequests = db.Relationship(
         'ServiceRequest', backref='professionals',
         lazy=True)  # One to Many Relationship with ServiceRequests
     timestamp = db.Column(db.DateTime, default=datetime.now())
-
 
 class ServiceProfessional(db.Model):
     __tablename__ = 'service_professionals'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     professional_id = db.Column(db.Integer, db.ForeignKey('professionals.id'))
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'))
-
 
 class Customer(db.Model):
     __tablename__ = 'customers'
@@ -79,7 +81,7 @@ class Customer(db.Model):
     address = db.Column(db.String(500), nullable=False)
     pincode = db.Column(db.Integer, nullable=False)
     contact = db.Column(db.String(20), nullable=False)
-    active = db.Column(db.Boolean)
+    active = db.Column(db.Boolean,default="True")
     servicerequests = db.Relationship(
         'ServiceRequest', backref='customers',
         lazy=True)  # One to Many Relationship with ServiceRequests

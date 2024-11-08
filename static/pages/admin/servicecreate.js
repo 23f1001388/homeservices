@@ -9,7 +9,7 @@ const ServiceCreate = {
     <div class="col-md-4 shadow-lg border p-2">
     <div class="p-3">
       <h4 class="text-center">Create Service</h4>
-        <div class="badge text-danger alert fs-6" v-show="errormessage">{{errormessage}}</div>
+        <div class="badge text-danger alert fs-6 text-wrap" v-show="errormessage">{{errormessage}}</div>
        <div class="form-floating mb-3 mt-3">
           <input v-model="name" type="name" class="form-control" id="name" name="name" placeholder="name@example.com" required>
           <label for="name">Name of Service</label>
@@ -40,8 +40,8 @@ const ServiceCreate = {
     `,
   data() {
     return {
-      name: "",
-      description: "",
+      name: null,
+      description: null,
       price: null,
       timerequired: null,
       errormessage: null,
@@ -58,25 +58,39 @@ const ServiceCreate = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-            name: this.name,
-            description: this.description,
-            price: this.price,
-            timerequired: this.timerequired,
-          }),
-          credentials: "same-origin",
+                name: this.name,
+                description: this.description,
+                price: this.price,
+                timerequired: this.timerequired,
+            }),
+            credentials: "same-origin",  // ensures credentials are sent (like cookies, etc.)
         });
+    
+        // Check if the response is JSON before trying to parse it
         if (result.ok) {
-          const data = await result.json();
-          console.log(data);
+            try {
+                const data = await result.json(); // Try parsing JSON
+                console.log(data);
+                this.errormessage = data.message; // Assuming the response has a message field
+                this.name = null;
+                this.description = null;
+                this.price = null;
+                this.timerequired = null;
+            } catch (jsonError) {
+                console.error("Failed to parse JSON:", jsonError);
+                this.errormessage = "Error: Response is not in valid JSON format.";
+            }
         } else {
-          const errorMsg = await result.json();
-          this.errormessage = errorMsg.message;
-          console.log("Service not Created : ", errorMsg);
+            // Handle non-OK responses (404, 500, etc.)
+            const errorMsg = await result.json(); // Get raw text if not JSON
+            console.error("Non-OK response:", errorMsg.message);
+            this.errormessage = "Error: " + errorMsg.message;
         }
-      } catch (error) {
+    } catch (error) {
+        // Catch any other errors (network issues, etc.)
         console.log("Fetch error:", error);
-        this.errormessage = "Error Occured";
-      }
+        this.errormessage = "Error Occurred: " + error.message || "An unknown error occurred.";
+    }
     },
   },
 };

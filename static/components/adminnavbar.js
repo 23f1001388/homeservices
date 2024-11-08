@@ -11,7 +11,10 @@ const AdminNavbar={
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <router-link to='/admin/dashboard' class="nav-link active" aria-current="page">Home</router-link>
+              <router-link to='/admin/users' class="nav-link active" aria-current="page">Users</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to='/admin/dashboard' class="nav-link active" aria-current="page">Services</router-link>
             </li>
             <li class="nav-item">
               <router-link to='/admin/search' class="nav-link">Search</router-link>
@@ -19,25 +22,22 @@ const AdminNavbar={
             <li class="nav-item">
               <router-link to='/admin/summary' class="nav-link" >Summary</router-link>
             </li>
-            <li class="nav-item">
-              <router-link to='/logout' class="nav-link" >Logout</router-link>
-            </li>
            
           </ul>
-          <ul class="navbar-nav ms-auto me-3">
+          <ul class="navbar-nav me-auto">
             <li>Welcome: {{current_user.email }}</li>
           </ul>
          
          <div class="dropdown">
             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-person-circle"></i>
+              <i class="bi bi-person-circle"></i> {{current_user.email }}
             </button>
             
             <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg-end dropdown-menu-light">
                   <ul class="list-unstyled">
                     <li><button class="dropdown-item" @click="logout">Logout</button></li>
                     <li><button class="dropdown-item" @click="sendEmail">Send Mail</button></li>
-                    <li><router-link class="dropdown-item" to="/profile">Profile</router-link></li>
+                    <li><router-link class="dropdown-item" to="/admin/profile">Profile</router-link></li>
                   </ul>
             </div>
           </div>

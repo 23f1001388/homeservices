@@ -4,12 +4,19 @@ import Contact from '../pages/contact.js'
 import Login from '../pages/login.js'
 import RegisterCustomer from '../pages/registercustomer.js'
 import RegisterProfessional from '../pages/registerprofessional.js'
-// import AdminMain from '../pages/admin/adminmain.js'
+import store from './store.js'
+
+// Admin Component/Pages
+import UserDetails from '../pages/admin/userdetails.js'
 import ServiceCreate from '../pages/admin/servicecreate.js'
 import AdminDashboard from '../pages/admin/admindashboard.js'
+
+// Professional Components/Pages
 import ProfessionalDashboard from '../pages/professionals/professionaldashboard.js'
+
+// Customer Component/Pages
 import CustomerDashboard from '../pages/customers/customerdashboard.js'
-import store from './store.js'
+
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
@@ -18,9 +25,15 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/register/customer', component: RegisterCustomer },
   { path: '/register/professional', component: RegisterProfessional },
+  // Admin Routes
   { path: '/admin/dashboard', component: AdminDashboard, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/service/create', component: ServiceCreate, meta: { requiresLogin: true, role: 'admin' } },
+  { path: '/admin/users', component: UserDetails, meta: { requiresLogin: true, role: 'admin' } },
+
+  // Professional Routes
   { path: '/professional/dashboard', component: ProfessionalDashboard, meta: { requiresLogin: true, role: 'professional' } },
+
+  // Customer Routes
   { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'cus  tomer' } },
 
 ]
