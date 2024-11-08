@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String, nullable=False)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     roles = db.Relationship('Role', secondary='users_roles', backref='user')
-    active = db.Column(db.Boolean)
+    active = db.Column(db.Boolean,default=True)
     timestamp = db.Column(db.DateTime, default=datetime.now())
 
 
@@ -43,6 +43,7 @@ class Service(db.Model):
     description = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     timerequired = db.Column(db.Integer, nullable=False)
+    active = db.Column(db.Boolean,default=True)
     servicerequests = db.Relationship(
         'ServiceRequest', backref='services',
         lazy=True)  # One to Many Relationship with ServiceRequests
@@ -61,7 +62,7 @@ class Professional(db.Model):
     experience = db.Column(db.Integer, nullable=False)
     filepath=db.Column(db.String,nullable=False)
     services = db.Relationship('Service', secondary='service_professionals',backref='professionals')
-    active = db.Column(db.Boolean,default="True")
+    active = db.Column(db.Boolean,default=True)
     servicerequests = db.Relationship(
         'ServiceRequest', backref='professionals',
         lazy=True)  # One to Many Relationship with ServiceRequests
@@ -81,7 +82,7 @@ class Customer(db.Model):
     address = db.Column(db.String(500), nullable=False)
     pincode = db.Column(db.Integer, nullable=False)
     contact = db.Column(db.String(20), nullable=False)
-    active = db.Column(db.Boolean,default="True")
+    active = db.Column(db.Boolean,default=True)
     servicerequests = db.Relationship(
         'ServiceRequest', backref='customers',
         lazy=True)  # One to Many Relationship with ServiceRequests

@@ -50,9 +50,9 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     users = Professional.query.all()
     professionals = []
     for user in users:
-      userdata = {"id": user.id, "email": user.email}
+      userdata = {"id": user.id, "email": user.email,"name": user.name,"experience":user.experience,"services":[service.name for service in user.services],"active":int(user.active)}
       professionals.append(userdata)
-    return professionals
+    return jsonify(professionals),200
 
   @app.route('/admin/customers', methods=['GET'])
   def get_customers():
@@ -61,7 +61,7 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     for user in users:
       userdata = {"id": user.id, "email": user.email}
       customers.append(userdata)
-    return customers
+    return customers,200
   
   @app.route('/', defaults={'path': ''})
   @app.route('/<path:path>')
@@ -198,6 +198,23 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
       else:
         return jsonify({"message":"Professional aleady Exists"}),404
 
+  @app.route('/admin/approveprofessional/<int:id>', methods=['PUT'])
+  def approve_professional(id):
+    professional = Professional.query.get(id)
+    if not professional:
+        return jsonify({"message": "Professional not found"}), 404
+    professional.active = True  
+    db.session.commit()
+    return jsonify({"message": "Professional Updated successfully"}), 200
+  
+  @app.route('/admin/rejectprofessional/<int:id>', methods=['PUT'])
+  def reject_professional(id):
+    professional = Professional.query.get(id)
+    if not professional:
+        return jsonify({"message": "Professional not found"}), 404
+    professional.active = False  
+    db.session.commit()
+    return jsonify({"message": "Professional Updated successfully"}), 200
 
   @app.route('/register/customer',methods=['POST'])
   def registerCustomer():

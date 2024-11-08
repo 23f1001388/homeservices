@@ -1,6 +1,6 @@
 from flask_restful import Resource,Api,fields,marshal_with,reqparse
 from flask_security import auth_required,roles_required
-from flask import jsonify
+from flask import jsonify,make_response
 from application.models import Service
 from application.application import db
 
@@ -14,6 +14,15 @@ create_service_parser.add_argument('price',type=float)
 create_service_parser.add_argument('timerequired',type=int)
 
 
+edit_service_parser=reqparse.RequestParser()
+
+edit_service_parser.add_argument('id',type=int)
+edit_service_parser.add_argument('name',type=str)
+edit_service_parser.add_argument('description',type=str)
+edit_service_parser.add_argument('price',type=float)
+edit_service_parser.add_argument('timerequired',type=int)
+
+
 service_fields = {
     'id': fields.Integer,
     'name': fields.String,
@@ -24,12 +33,15 @@ service_fields = {
 
 class ServiceAPI(Resource):
     @marshal_with(service_fields)
-    def get(self):
-        allservices=Service.query.all()
-        if allservices is None:
-            return jsonify({"message":"No Service Found"}),404
-        return allservices,200
-    
+    def get(self,id=None):
+        if not id:
+            services=Service.query.all()
+        else:
+            services=Service.query.get(id)
+        if services is None:
+                return jsonify({"message":"No Service Found"}),404
+        return services,200
+        
     def post(self):
         args=create_service_parser.parse_args()
         name=args.get("name")
@@ -39,7 +51,7 @@ class ServiceAPI(Resource):
         
         print(name,description)
         if not name or not description or not price or not timerequired:
-            return ({"message":"Required Paramters are missing"}),404
+            return jsonify({"message":"Required Paramters are missing"}),404
         
         exists=Service.query.filter_by(name=name).first()
         
@@ -49,7 +61,30 @@ class ServiceAPI(Resource):
         newService=Service(name=name,description=description,price=price,timerequired=timerequired)
         db.session.add(newService)
         db.session.commit()
-        return ({"message":"Service successfully Created"}),200
+        response = make_response(jsonify({"message": "Service successfully Created"}),200)
+        return response
+    
+    def put(self):
+        args=edit_service_parser.parse_args()
+        id=args.get("serviceId")
+        name=args.get("name")
+        description=args.get("description")
+        price=args.get("price")
+        timerequired=args.get("timerequired")
         
+        if not name or not description or not price or not timerequired:
+            return jsonify({"message": "Required Paramters are missing"}),404
         
-api.add_resource(ServiceAPI,'/serviceapi')
+        service=Service.query.filter_by(name=name).first()
+        service.name=name
+        service.description=description
+        service.price=price
+        service.timerequired=timerequired
+        db.session.commit()
+        response = make_response(jsonify({"message": "Service successfully updated"}), 200)
+        return response
+        
+
+api.add_resource(ServiceAPI, '/serviceapi', endpoint='services')# For fetching all services
+api.add_resource(ServiceAPI, '/serviceapi/<int:id>', endpoint='service') 
+

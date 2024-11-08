@@ -7,9 +7,11 @@ import RegisterProfessional from '../pages/registerprofessional.js'
 import store from './store.js'
 
 // Admin Component/Pages
+import AdminDashboard from '../pages/admin/admindashboard.js'
 import UserDetails from '../pages/admin/userdetails.js'
 import ServiceCreate from '../pages/admin/servicecreate.js'
-import AdminDashboard from '../pages/admin/admindashboard.js'
+import ServiceEdit from '../pages/admin/serviceedit.js'
+
 
 // Professional Components/Pages
 import ProfessionalDashboard from '../pages/professionals/professionaldashboard.js'
@@ -28,6 +30,7 @@ const routes = [
   // Admin Routes
   { path: '/admin/dashboard', component: AdminDashboard, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/service/create', component: ServiceCreate, meta: { requiresLogin: true, role: 'admin' } },
+  { path: '/admin/service/edit/:id', component: ServiceEdit, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/users', component: UserDetails, meta: { requiresLogin: true, role: 'admin' } },
 
   // Professional Routes
