@@ -1,17 +1,34 @@
 import CustomerNavbar from "../../components/customernavbar.js";
 
-const CustomerDashboard = {
+const CustomerServices = {
     template: `
     <div>
         <CustomerNavbar/>
     </div>
     <div class="row justify-content-center p-5">
-            <h4 class="text-center">Lookin For ?</h4>
-            <div v-for="service in services" :key="service.id" class="col-4 shadow-lg border p-3 rounded-5 m-2 d-flex flex-column justify-content-between">
-                <h5 class="text-center">{{ service.name }}</h5>
-                <p><strong>Price:</strong> Rs. {{ service.price }}</p>
-                <p><strong>Time Required:</strong> {{ service.timerequired }} Hours</p>
-                <router-link :to="'/customer/services/' + service.id" class="btn btn-dark mx-auto btn-sm"><i class="bi bi-binoculars"></i> Explore</router-link>
+           <div class="col shadow-lg border p-3">
+                <h4 class="text-center">Best Services in {{service.name}}</h4>
+                    
+                <table class="table responsive">
+                    <thead>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Time(in Hrs.)</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{service.id}}</td>
+                        <td>{{service.name}}</td>
+                        <td>{{service.price}}</td>
+                        <td>{{ service.timerequired }}</td>
+                        <td>
+                            <router-link :to="'/customer/service/book/' + service.id" class="btn btn-primary btn-sm"><i class="bi bi-bag-plus"></i> Book Service</router-link>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
     </div>
     <div class="row justify-content-center p-5">
@@ -46,15 +63,41 @@ const CustomerDashboard = {
     data() {
         return {
             services: [],
+            service:'',
+            serviceId:null,
         }
     },
     components: {
         CustomerNavbar,
     },
-    mounted() {
+    created(){
+        this.serviceId = this.$route.params.id;
+        this.getService();
         this.getServices();
-    },
+      },
     methods: {
+        async getService() {
+            const url = window.location.origin;
+            try {
+                const result = await fetch(url + `/api/serviceapi/${this.serviceId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'same-origin',
+                });
+                if (result.ok) {
+                    const data = await result.json();
+                    console.log(data);
+                    this.service=data;
+                }
+                else {
+                    const error = await result.json();
+                    console.log(error);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
         async getServices() {
             const url = window.location.origin;
             try {
@@ -76,12 +119,7 @@ const CustomerDashboard = {
             }
         },
     },
-    computed: {
-        current_user() {
-            return this.$store.state.current_user;
-        },
-
-    },
+    
 }
 
-export default CustomerDashboard;
+export default CustomerServices;

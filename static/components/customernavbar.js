@@ -2,7 +2,7 @@ const CustomerNavbar={
     template:`<div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light navbar-light">
       <div class="container-fluid">
-        <router-link class="navbar-brand fs-3" to="/customer/dashboard">Welcome: {{current_user.email }}</router-link>
+        <router-link class="navbar-brand fs-3" to="/customer/dashboard">Dashboard</router-link>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>

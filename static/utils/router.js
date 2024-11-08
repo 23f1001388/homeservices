@@ -18,6 +18,7 @@ import ProfessionalDashboard from '../pages/professionals/professionaldashboard.
 
 // Customer Component/Pages
 import CustomerDashboard from '../pages/customers/customerdashboard.js'
+import CustomerServices from '../pages/customers/customerservices.js'
 
 
 const routes = [
@@ -38,6 +39,7 @@ const routes = [
 
   // Customer Routes
   { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'customer' } },
+  { path: '/customer/services/:id', component: CustomerServices, meta: { requiresLogin: true, role: 'customer' } },
 
 ]
 
