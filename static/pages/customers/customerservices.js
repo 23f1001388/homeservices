@@ -15,16 +15,20 @@ const CustomerServices = {
                         <th>Name</th>
                         <th>Price</th>
                         <th>Time(in Hrs.)</th>
+                        <th>Professional</th>
                         <th>Actions</th>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>{{service.id}}</td>
-                        <td>{{service.name}}</td>
-                        <td>{{service.price}}</td>
-                        <td>{{ service.timerequired }}</td>
+                    <tr v-for="service in serviceProfessionals">
+                        <td>{{service.service_id}}</td>
+                        <td>{{service.service_name}}</td>
+                        <td>{{service.service_price}}</td>
+                        <td>{{service.service_timerequired }}</td>
+                        <td>{{service.professional_id }}</td>
+                        <td>{{service.professional_name }}</td>
+
                         <td>
-                            <router-link :to="'/customer/service/book/' + service.id" class="btn btn-primary btn-sm"><i class="bi bi-bag-plus"></i> Book Service</router-link>
+                            <button class="btn btn-primary btn-sm" @click="createServiceRequest(service.professional_id)"><i class="bi bi-bag-plus"></i> Book Service</button>
                         </td>
                     </tr>
                     </tbody>
@@ -62,9 +66,10 @@ const CustomerServices = {
     `,
     data() {
         return {
-            services: [],
+            serviceProfessionals: [],
             service:'',
             serviceId:null,
+            professionalId:'',
         }
     },
     components: {
@@ -72,8 +77,9 @@ const CustomerServices = {
     },
     created(){
         this.serviceId = this.$route.params.id;
-        this.getService();
-        this.getServices();
+        this.getServiceProfessional();
+        // this.getService();
+        // this.getServices();
       },
     methods: {
         async getService() {
@@ -118,6 +124,62 @@ const CustomerServices = {
                 console.log(e);
             }
         },
+
+        async getServiceProfessional() {
+            const url = window.location.origin;
+            try {
+                const result = await fetch(url + `/service/professionals/${this.serviceId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'same-origin',
+                });
+                if (result.ok) {
+                    const data = await result.json();
+                    console.log(data);
+                    this.serviceProfessionals=data;
+                }
+                else {
+                    const error = await result.json();
+                    console.log(error);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+
+        async createServiceRequest(professional_id){
+            try{
+                const url=window.location.origin;
+                const user=JSON.parse(sessionStorage.getItem('user'));
+                const customerId=user.id;
+                console.log(customerId);
+                const result=await fetch(url + `/servicerequest/create/${professional_id}`,{
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        serviceId:this.serviceId,
+                        customerId: customerId,
+                    }),
+                    credentials: 'same-origin',
+                });
+    
+                if(result.ok){
+                    const data=await result.json();
+                    console.log(data);
+                    this.errorMessage=data.message;
+                }else {
+                    const errorMsg = await result.json();
+                    console.log("Failed to create Service request : ", errorMsg);
+                    this.errormessage="Failed to create Service request";
+                  }
+            }catch (error) {
+                console.log("Fetch error:", error);
+                this.errormessage="Fetch error:", error;
+              }
+        },
+
+
     },
     
 }

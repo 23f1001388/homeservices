@@ -14,6 +14,19 @@ const CustomerDashboard = {
                 <router-link :to="'/customer/services/' + service.id" class="btn btn-dark mx-auto btn-sm"><i class="bi bi-binoculars"></i> Explore</router-link>
             </div>
     </div>
+
+    <div class="row justify-content-center p-5">
+            <h4 class="text-center">Lookin For ?</h4>
+            <div v-for="service in serviceProfessionals" :key="service.id" class="cols-4 shadow-lg border p-3 rounded-5 m-2 d-flex flex-column justify-content-between">
+                <h5 class="text-center">{{ service.service_name }}</h5>
+                <p><strong>Service Price:</strong> Rs. {{ service.service_price }}</p>
+                <p><strong>Time Required:</strong> {{ service.service_timerequired }}  Hours</p>
+                <p><strong>Professional Id:</strong> {{ service.professional_id }}</p>
+                <p><strong>Professional Name:</strong> {{ service.professional_name }}</p>                
+                <router-link :to="'/customer/services/' + service.service_id" class="btn btn-dark mx-auto btn-sm"><i class="bi bi-binoculars"></i> Explore</router-link>
+            </div>
+    </div>
+
     <div class="row justify-content-center p-5">
            <div class="col shadow-lg border p-3">
                 <h4>Service History</h4>
@@ -46,6 +59,7 @@ const CustomerDashboard = {
     data() {
         return {
             services: [],
+            serviceProfessionals:[],
         }
     },
     components: {
@@ -53,6 +67,7 @@ const CustomerDashboard = {
     },
     mounted() {
         this.getServices();
+        this.getServicesProfessionals();
     },
     methods: {
         async getServices() {
@@ -75,6 +90,29 @@ const CustomerDashboard = {
                 console.log(e);
             }
         },
+
+        async getServicesProfessionals() {
+            const url = window.location.origin;
+            try {
+                const result = await fetch(url + "/service/professionals", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'same-origin',
+                });
+                if (result.ok) {
+                    const data = await result.json();
+                    console.log(data);
+                    this.serviceProfessionals = data;
+                }
+                else {
+                    const error = await result.json();
+                    console.log(error);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
     },
     computed: {
         current_user() {

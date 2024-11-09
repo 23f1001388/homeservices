@@ -8,6 +8,7 @@ from application.application import db
 from flask_security.utils import hash_password
 import mimetypes,os
 from werkzeug.utils import secure_filename
+from datetime import datetime
 # from app import app
 
 basedir=os.path.abspath(os.path.dirname(__file__))
@@ -62,6 +63,48 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
       userdata = {"id": user.id, "email": user.email}
       customers.append(userdata)
     return customers,200
+  
+  @app.route('/service/professionals')
+  def getServiceProfessionals():
+    serviceProfessionals = ServiceProfessional.query.all()
+    objectData=[]
+    count=1
+    for data in serviceProfessionals:
+      service_id=data.service_id
+      service=Service.query.filter(Service.id==service_id).first()
+      for professional in service.professionals:
+        obj={
+          "id":count,
+          "service_id":service.id,
+          "service_name":service.name,
+          "service_price":service.price,
+          "service_timerequired":service.timerequired,
+          "professional_id":professional.id,
+          "professional_name":professional.name
+        }
+        objectData.append(obj)
+        count+=1
+    return objectData, 200
+  
+
+  @app.route('/service/professionals/<int:service_id>')
+  def getServiceProfessionalsbyService(service_id):
+    objectData=[]
+    count=1
+    service=Service.query.filter(Service.id==service_id).first()
+    for professional in service.professionals:
+      obj={
+        "id":count,
+        "service_id":service.id,
+        "service_name":service.name,
+        "service_price":service.price,
+        "service_timerequired":service.timerequired,
+        "professional_id":professional.id,
+        "professional_name":professional.name
+      }
+      objectData.append(obj)
+      count+=1
+    return objectData, 200
   
   @app.route('/', defaults={'path': ''})
   @app.route('/<path:path>')
@@ -248,4 +291,52 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
       else:
         return jsonify({"message":"Customer aleady Exists"}),404
     
+  @app.route('/admin/approvecustomer/<int:id>', methods=['PUT'])
+  def approve_customer(id):
+    customer = Customer.query.get(id)
+    if not customer:
+        return jsonify({"message": "Customer not found"}), 404
+    customer.active = True  
+    db.session.commit()
+    return jsonify({"message": "Customer Updated successfully"}), 200
+  
+  @app.route('/admin/rejectcustomer/<int:id>', methods=['PUT'])
+  def reject_customer(id):
+    customer = Customer.query.get(id)
+    if not customer:
+        return jsonify({"message": "Customer not found"}), 404
+    customer.active = False  
+    db.session.commit()
+    return jsonify({"message": "Customer Updated successfully"}), 200
+  
+
+    
+
+  @app.route('/servicerequest/create/<int:professional_id>',methods=['POST'])
+  def serviceRequest_creation(professional_id):
+    data=request.get_json()
+
+    service_id = data.get('serviceId')
+    customer_id = data.get('customerId')
+    professional_id = professional_id
+    requestdate = datetime.now()
+    status = "Requested"  #requested/assigned/closed
+   
+    print(customer_id,professional_id)
+
+    if not service_id or not customer_id or not professional_id:
+      return jsonify({"message": "Some fields are blank"}),404
+    else:
+        try:
+          newServiceRequest=ServiceRequest(service_id=service_id,customer_id=customer_id,
+                                           professional_id=professional_id,requestdate=requestdate,
+                                           status=status)
+          
+          
+          db.session.add(newServiceRequest)
+          db.session.commit()
+          return jsonify({"message":"ServiceRequest created Successfully"}),200
+        except Exception as e:
+          db.session.rollback()
+          return jsonify({"message":{e}}),404
       

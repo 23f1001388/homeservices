@@ -5,7 +5,7 @@ const AdminDashboard = {
     <div>
         <AdminNavbar/>
     </div>
-    <div class="row justify-content-center p-5">
+    <div class="row justify-content-center ps-5 pe-5">
            <div class="col shadow-lg border p-3">
                 <div class="d-flex justify-content-between">
                         <h4>Services</h4>
@@ -38,7 +38,7 @@ const AdminDashboard = {
             </div>
     </div>
 
-        <div class="row justify-content-center p-5">
+    <div class="row justify-content-center ps-5 pe-5">
            <div class="col shadow-lg border p-3 border">
                 <h3>Professionals</h3>
                 <table class="table responsive">
@@ -71,14 +71,51 @@ const AdminDashboard = {
                 </table>
             </div>
     </div>
+
+        <div class="row justify-content-center ps-5 pe-5">
+           <div class="col shadow-lg border p-3 border">
+                <h3>Customers</h3>
+                <table class="table responsive">
+                    <thead>
+                        <th>Id</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody>
+                    <tr v-for="customer in customers" :key="customer.id">
+                        <td>{{customer.id}}</td>
+                        <td>{{customer.email}}</td>
+                        <td>{{customer.name}}</td>
+                        <td>{{customer.address}} Years</td>
+                        <td>{{ customer.contact }}</td>
+                        <td><span v-if="customer.active==1" class="badge text-bg-success">Active</span>
+                            <span v-else class="badge text-bg-danger">Inactive</span></td>
+                        <td>
+                            <button class="btn btn-success btn-sm" @click="approveCustomer(customer.id)"><i class="bi bi-check-circle"></i> Approve</button>
+                            <button class="btn btn-warning btn-sm ms-3" @click="rejectCustomer(customer.id)"><i class="bi bi-x-circle"></i> Reject</button>
+                            <button class="btn btn-danger ms-3 btn-sm"><i class="bi bi-trash3"></i> Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+    </div>
+
     `,
     data() {
         return {
             allServices: [],
             professionals:[],
+            customers:[],
             serviceRequests:[],
-            errorMessage:'',
             professionalId:'',
+            customerId:'',
+            errorMessage:'',
         }
     },
     components: {
@@ -87,6 +124,7 @@ const AdminDashboard = {
     mounted() {
         this.getServices();
         this.getProfessionals();
+        this.getCustomers();
         // this.getServiceRequests();
     },
     methods: {
@@ -189,6 +227,74 @@ const AdminDashboard = {
                     const updatedProfessional = this.professionals.find(prof => prof.id === id);
                     if (updatedProfessional) {
                         updatedProfessional.active = 0;  // Update to active status
+                    }
+                }
+                else {
+                    const error = await result.json();
+                    console.log(error);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+        async getCustomers() {
+            const url = window.location.origin;
+            try {
+                const result = await fetch(url + "/admin/customers", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'same-origin',
+                });
+                if (result.ok) {
+                    const data = await result.json();
+                    this.customers = data;
+                }
+                else {
+                    const error = await result.json();
+                    console.log(error);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+        async approveCustomer(id){
+            const url = window.location.origin;
+            try {
+                const result = await fetch(url + `/admin/approvecustomer/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                });
+                if (result.ok) {
+                    const data = await result.json();
+                    this.errorMessage = data;
+                    const updatedCustomer = this.customers.find(cust => cust.id === id);
+                    if (updatedCustomer) {
+                        updatedCustomer.active = 1;  // Update to active status
+                    }
+                }
+                else {
+                    const error = await result.json();
+                    console.log(error);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        async rejectCustomer(id){
+            const url = window.location.origin;
+            try {
+                const result = await fetch(url + `/admin/rejectcustomer/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                });
+                if (result.ok) {
+                    const data = await result.json();
+                    this.errorMessage = data;
+                    const updatedCustomer = this.customers.find(cust => cust.id === id);
+                    if (updatedCustomer) {
+                        updatedCustomer.active = 0;  // Update to active status
                     }
                 }
                 else {
