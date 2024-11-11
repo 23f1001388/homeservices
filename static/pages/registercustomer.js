@@ -6,7 +6,7 @@ const RegisterCustomer={
         <Navbar/> 
       </div>
     <div class="row justify-content-center p-5">
-    <div class="col-md-4 shadow-lg border p-2">
+    <div class="col-md-6 shadow-lg border p-2">
     <div class="p-3">
    
       <h4 class="text-center">Customer SignUp</h4>

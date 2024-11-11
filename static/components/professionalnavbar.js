@@ -35,7 +35,7 @@ const ProfessionalNavbar={
             <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg-end dropdown-menu-light">
                   <ul class="list-unstyled">
                     <li><button class="dropdown-item" @click="logout">Logout</button></li>
-                    <li><router-link class="dropdown-item" to="professional/profile">Profile</router-link></li>
+                    <li><router-link class="dropdown-item" to="/professional/profile">Profile</router-link></li>
                   </ul>
             </div>
           </div>

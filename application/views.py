@@ -309,8 +309,41 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     db.session.commit()
     return jsonify({"message": "Customer Updated successfully"}), 200
   
-
-    
+  @app.route('/servicerequests/bycustomers/<int:customerId>')
+  def servicerequests_bycustomers(customerId):
+    servicerequests=ServiceRequest.query.filter(ServiceRequest.customer_id==customerId).all()
+    dataObject=[]
+    for servicerequest in servicerequests:
+      service=Service.query.filter(Service.id==servicerequest.service_id).first()
+      professional=Professional.query.filter(Professional.id==servicerequest.professional_id).first()
+      data={
+        "id":servicerequest.id,
+        "service_id":service.id,
+        "service_name":service.name,
+        "professional_name":professional.name,
+        "professional_contact":professional.contact,
+        "status":servicerequest.status
+      } 
+      dataObject.append(data)
+    return dataObject,200
+  
+  @app.route('/servicerequests/byprofessionals/<int:professionalId>')
+  def servicerequests_byprofeesional(professionalId):
+    servicerequests=ServiceRequest.query.filter(ServiceRequest.professional_id==professionalId).all()
+    dataObject=[]
+    for servicerequest in servicerequests:
+      service=Service.query.filter(Service.id==servicerequest.service_id).first()
+      customer=Customer.query.filter(Customer.id==servicerequest.customer_id).first()
+      data={
+        "id":servicerequest.id,
+        "service_id":service.id,
+        "service_name":service.name,
+        "customer_name":customer.name,
+        "customer_contact":customer.contact,
+        "status":servicerequest.status
+      } 
+      dataObject.append(data)
+    return dataObject,200
 
   @app.route('/servicerequest/create/<int:professional_id>',methods=['POST'])
   def serviceRequest_creation(professional_id):

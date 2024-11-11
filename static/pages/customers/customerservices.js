@@ -70,6 +70,7 @@ const CustomerServices = {
             service:'',
             serviceId:null,
             professionalId:'',
+            customerId:'',
         }
     },
     components: {
@@ -78,6 +79,8 @@ const CustomerServices = {
     created(){
         this.serviceId = this.$route.params.id;
         this.getServiceProfessional();
+        const user=JSON.parse(sessionStorage.getItem('user'));
+        this.customerId=user.id;
         // this.getService();
         // this.getServices();
       },
@@ -151,9 +154,6 @@ const CustomerServices = {
         async createServiceRequest(professional_id){
             try{
                 const url=window.location.origin;
-                const user=JSON.parse(sessionStorage.getItem('user'));
-                const customerId=user.id;
-                console.log(customerId);
                 const result=await fetch(url + `/servicerequest/create/${professional_id}`,{
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

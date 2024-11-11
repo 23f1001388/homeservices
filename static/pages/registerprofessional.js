@@ -6,7 +6,7 @@ const RegisterProfessional = {
         <Navbar/> 
       </div>
     <div class="row justify-content-center p-3">
-    <div class="col-md-4 shadow-lg border p-2">
+    <div class="col-md-6 shadow-lg border p-2">
     <div class="p-2">
 
       <h4 class="text-center">Service Professional SignUp</h4>

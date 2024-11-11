@@ -15,10 +15,12 @@ import ServiceEdit from '../pages/admin/serviceedit.js'
 
 // Professional Components/Pages
 import ProfessionalDashboard from '../pages/professionals/professionaldashboard.js'
+import ProfessionalProfile from '../pages/professionals/professionalprofile.js'
 
 // Customer Component/Pages
 import CustomerDashboard from '../pages/customers/customerdashboard.js'
 import CustomerServices from '../pages/customers/customerservices.js'
+import CustomerProfile from '../pages/customers/customerprofile.js'
 
 
 const routes = [
@@ -36,10 +38,12 @@ const routes = [
 
   // Professional Routes
   { path: '/professional/dashboard', component: ProfessionalDashboard, meta: { requiresLogin: true, role: 'professional' } },
+  { path: '/professional/profile', component: ProfessionalProfile, meta: { requiresLogin: true, role: 'professional' } },
 
   // Customer Routes
   { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'customer' } },
   { path: '/customer/services/:id', component: CustomerServices, meta: { requiresLogin: true, role: 'customer' } },
+  { path: '/customer/profile', component: CustomerProfile, meta: { requiresLogin: true, role: 'customer' } },
 
 ]
 
