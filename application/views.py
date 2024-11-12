@@ -309,13 +309,27 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     db.session.commit()
     return jsonify({"message": "Customer Updated successfully"}), 200
   
+  def getProfessionalId(userId):
+    user=User.query.get(userId)
+    professional=Professional.query.filter_by(email=user.email).first()
+    professionalId=professional.id
+    return professionalId
+
+  def getCustomerId(userId):
+    user=User.query.get(userId)
+    customer=Customer.query.filter_by(email=user.email).first()
+    customerId=customer.id
+    return customerId
+
   @app.route('/servicerequests/bycustomers/<int:customerId>')
-  def servicerequests_bycustomers(customerId):
+  def servicerequests_bycustomers(userId):
+    customerId=getCustomerId(userId)
     servicerequests=ServiceRequest.query.filter(ServiceRequest.customer_id==customerId).all()
     dataObject=[]
     for servicerequest in servicerequests:
       service=Service.query.filter(Service.id==servicerequest.service_id).first()
-      professional=Professional.query.filter(Professional.id==servicerequest.professional_id).first()
+      professionalId=getProfessionalId(servicerequest.professional_id)
+      professional=Professional.query.filter(Professional.id==servicerequest.professionalId).first()
       data={
         "id":servicerequest.id,
         "service_id":service.id,
@@ -327,20 +341,31 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
       dataObject.append(data)
     return dataObject,200
   
-  @app.route('/servicerequests/byprofessionals/<int:professionalId>')
-  def servicerequests_byprofeesional(professionalId):
+  
+  
+  @app.route('/servicerequests/byprofessionals/<int:userId>')
+  def servicerequests_byprofeesional(userId):
+    professionalId=getProfessionalId(userId)
     servicerequests=ServiceRequest.query.filter(ServiceRequest.professional_id==professionalId).all()
+    print("Professional Id: ",professionalId)
+
     dataObject=[]
     for servicerequest in servicerequests:
       service=Service.query.filter(Service.id==servicerequest.service_id).first()
-      customer=Customer.query.filter(Customer.id==servicerequest.customer_id).first()
+      customerId=getCustomerId(servicerequest.customer_id)
+      customer=Customer.query.filter(Customer.id==customerId).first()
       data={
         "id":servicerequest.id,
         "service_id":service.id,
+        "creationdate":servicerequest.timestamp,
         "service_name":service.name,
         "customer_name":customer.name,
         "customer_contact":customer.contact,
-        "status":servicerequest.status
+        "customer_address":customer.address,
+        "customer_pincode":customer.pincode,
+        "status":servicerequest.status,
+        "rating":servicerequest.ratings,
+        "remarks":servicerequest.remarks
       } 
       dataObject.append(data)
     return dataObject,200
@@ -372,4 +397,21 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
         except Exception as e:
           db.session.rollback()
           return jsonify({"message":{e}}),404
-      
+        
+  @app.route('/professional/servicerequest/approve/<int:id>', methods=['PUT'])
+  def servicerequest_approve(id):
+    servicerequest = ServiceRequest.query.get(id)
+    if not servicerequest:
+        return jsonify({"message": "Service Request not found"}), 404
+    servicerequest.status = "Accepted"  
+    db.session.commit()
+    return jsonify({"message": "Service Request Updated successfully"}), 200
+  
+  @app.route('/professional/servicerequest/reject/<int:id>', methods=['PUT'])
+  def servicerequest_reject(id):
+    servicerequest = ServiceRequest.query.get(id)
+    if not servicerequest:
+        return jsonify({"message": "Service Request not found"}), 404
+    servicerequest.status = "Rejected"  
+    db.session.commit()
+    return jsonify({"message": "Service Request Updated successfully"}), 200
