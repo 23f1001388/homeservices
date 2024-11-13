@@ -1,28 +1,44 @@
-const Search={
+const ServiceSearch={
     template:`
     <div class="row justify-content-center ps-5 pe-5">
-           <div class="col shadow-lg border p-3">
-                <div class="d-flex justify-content-end">
-                        <h4>Search</h4>
-                        <router-link to="/admin/service/create" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i> </router-link>
-                </div>   
+           <div class="col shadow-lg border p-3"> 
+                <h4>Services</h4>
+                <table class="table responsive">
+                    <thead>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Time(in Hrs.)</th>
+         
+                    </thead>
+                    <tbody>
+                    <tr v-for="service in services" :key="service.id">
+                        <td>{{service.id}}</td>
+                        <td>{{service.name}}</td>
+                        <td>{{service.price}}</td>
+                        <td>{{ service.timerequired }}</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+               
+
             </div>
     </div>
+
     `,
-    data(){
-        return{
-            services:[],
-            serviceRequests:[],
-            customers:[],
-            professionals:[],
+    props: {
+        services: {
+            type: Array,  // Make sure services is an array
+            required: true,  // This prop is required
+            default: () => []  // Provide a default empty array if no services are passed
+          }
+      },
+      watch: {
+        services(newServices) {
+          console.log('Updated services:', newServices);
         }
-    },
-    methods:{
-        async searchService(searctype){
-
-        },
-
-    },
+      }
 }
 
-export default Search
+export default ServiceSearch

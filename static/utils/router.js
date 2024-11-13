@@ -11,6 +11,7 @@ import AdminDashboard from '../pages/admin/admindashboard.js'
 import UserDetails from '../pages/admin/userdetails.js'
 import ServiceCreate from '../pages/admin/servicecreate.js'
 import ServiceEdit from '../pages/admin/serviceedit.js'
+import AdminSearch from '../pages/admin/adminsearch.js'
 
 
 // Professional Components/Pages
@@ -35,6 +36,7 @@ const routes = [
   { path: '/admin/service/create', component: ServiceCreate, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/service/edit/:id', component: ServiceEdit, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/users', component: UserDetails, meta: { requiresLogin: true, role: 'admin' } },
+  { path: '/admin/search', component: AdminSearch, meta: { requiresLogin: true, role: 'admin' } },
 
   // Professional Routes
   { path: '/professional/dashboard', component: ProfessionalDashboard, meta: { requiresLogin: true, role: 'professional' } },

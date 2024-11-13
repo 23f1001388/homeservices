@@ -33,11 +33,17 @@ service_fields = {
 
 class ServiceAPI(Resource):
     @marshal_with(service_fields)
-    def get(self,id=None):
-        if not id:
-            services=Service.query.all()
-        else:
+    def get(self,id=None,name=None,description=None,price=None):
+        if id is not None:
             services=Service.query.get(id)
+        elif name is not None:
+            services=Service.query.filter(Service.name.like('%' + name + '%')).all()
+        elif description is not None:
+            services=Service.query.filter(Service.description.like('%' + description + '%')).all()
+        elif price is not None:
+            services=Service.query.filter(Service.price>=price).all()
+        else:
+            services=Service.query.all()
         if services is None:
                 return jsonify({"message":"No Service Found"}),404
         return services,200
