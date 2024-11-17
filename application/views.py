@@ -9,6 +9,7 @@ from flask_security.utils import hash_password
 import mimetypes,os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from application.search import searchProfessionals,searchCustomers,searchServices,searchServiceRequests
 # from app import app
 
 basedir=os.path.abspath(os.path.dirname(__file__))
@@ -54,6 +55,28 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
       userdata = {"id": user.id, "email": user.email,"name": user.name,"experience":user.experience,"services":[service.name for service in user.services],"active":int(user.active)}
       professionals.append(userdata)
     return jsonify(professionals),200
+  
+  @app.route('/search/professionals', methods=['GET'])
+  def search_professionals(id=None):
+    subType = request.args.get('subType')
+    searchText = request.args.get('searchText')
+    print(subType,searchText)
+    professionals=searchProfessionals(subType,searchText)
+
+    if professionals is None:
+        return jsonify({"message": "No Data Found"}), 404
+    return professionals, 200
+  
+  @app.route('/search/customers', methods=['GET'])
+  def search_customers(id=None):
+    subType = request.args.get('subType')
+    searchText = request.args.get('searchText')
+    print(subType,searchText)
+    customers=searchCustomers(subType,searchText)
+
+    if customers is None:
+        return jsonify({"message": "No Data Found"}), 404
+    return customers, 200
 
   @app.route('/admin/customers', methods=['GET'])
   def get_customers():

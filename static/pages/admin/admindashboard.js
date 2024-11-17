@@ -15,6 +15,7 @@ const AdminDashboard = {
                     <thead>
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Description</th>
                         <th>Price</th>
                         <th>Time(in Hrs.)</th>
                         <th>Actions</th>
@@ -23,6 +24,7 @@ const AdminDashboard = {
                     <tr v-for="service in allServices" :key="service.id">
                         <td>{{service.id}}</td>
                         <td>{{service.name}}</td>
+                         <td>{{service.description}}</td>
                         <td>{{service.price}}</td>
                         <td>{{ service.timerequired }}</td>
                         <td>

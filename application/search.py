@@ -3,49 +3,60 @@ from enum import Enum
 
 class SearchType(Enum):
     BY_NAME = "By Name"
-    BY_DESCRIPTION = "By Description"
-    BY_EXPERIENCE = "By Experience"
     BY_ADDRESS = "By Address"
     BY_PINCODE = "By Pincode"
-    BY_BUDGET = "By Budget"
+    BY_CONTACT = "By Contact"
     BY_STATUS = "By Status"
+    BY_DESCRIPTION = "By Description"
+    BY_EXPERIENCE = "By Experience"
+    BY_PRICE="By Price"
+    
 
 def searchProfessionals(subtype, search):
-
+  professionals=[]
   if subtype == SearchType.BY_NAME:
-    Professionals = Professional.query.filter(Professional.name.ilike(f'%{search}%')).all()
-  elif subtype == SearchType.BY_DESCRIPTION:
-    Professionals = Professional.query.filter(Professional.description.like('%' + search + '%')).all()
-  elif subtype == SearchType.BY_EXPERIENCE:
-    Professionals = Professional.query.filter(Professional.experience>= search).all()
-  elif subtype == SearchType.BY_ADDRESS:
-    Professionals = Professional.query.filter(Professional.address.like('%' + search + '%')).all()
-  elif subtype == SearchType.BY_PINCODE:
-    Professionals = Professional.query.filter(Professional.pincode==search).all()
-  elif subtype == SearchType.BY_STATUS:
-    Professionals = Professional.query.filter(Professional.status.like('%' + search +
-                                                        '%')).all()
-
-  return Professionals
+    objData = Professional.query.filter(Professional.name.ilike('%' + search + '%')).all()
+  if subtype == SearchType.BY_DESCRIPTION:
+    objData = Professional.query.filter(Professional.description.like('%' + search + '%')).all()
+  if subtype == SearchType.BY_EXPERIENCE:
+    objData = Professional.query.filter(Professional.experience>= search).all()
+  if subtype == SearchType.BY_ADDRESS:
+    objData = Professional.query.filter(Professional.address.like('%' + search + '%')).all()
+  if subtype == SearchType.BY_PINCODE:
+    objData = Professional.query.filter(Professional.pincode==search).all()
+  if subtype == SearchType.BY_STATUS:
+    objData = Professional.query.filter(Professional.status.like('%' + search + '%')).all()
+  
+  objData = Professional.query.all()
+   
+  for obj in objData:
+    userdata = {"id": obj.id, "email": obj.email,"name": obj.name,"experience":obj.experience,"services":[service.name for service in obj.services],"active":int(obj.active)}
+    professionals.append(userdata)
+ 
+  return professionals
 
 
 def searchCustomers(subtype, search):
+  customers=[]
 
   if subtype == SearchType.BY_NAME:
-    Customers = Customer.query.filter(
-        Customer.name.like('%' + search + '%')).all()
-  elif subtype == "By Category":
-    Customers = Customer.query.filter(
-        Customer.category.like('%' + search + '%')).all()
-  elif subtype == "By Niche":
-    Customers = Customer.query.filter(
-        Customer.niche.like('%' + search + '%')).all()
-  elif subtype == "By Reach":
-    Customers = Customer.query.filter(Customer.reach >= search).all()
-  elif subtype == "By Status":
-    Customers = Customer.query.filter(
-        Customer.status.like('%' + search + '%')).all()
-  return Customers
+    objData = Customer.query.filter(Customer.name.ilike('%' + search + '%')).all()
+  if subtype == SearchType.BY_ADDRESS:
+    objData = Customer.query.filter(Customer.address.like('%' + search + '%')).all()
+  if subtype == SearchType.BY_PINCODE:
+    objData = Customer.query.filter(Customer.pincode==search).all()
+  if subtype == SearchType.BY_CONTACT:
+    objData = Customer.query.filter(Customer.contact.like('%' + search + '%')).all()
+  if subtype == SearchType.BY_STATUS:
+    objData = Customer.query.filter(Customer.status.like('%' + search + '%')).all()
+  
+  objData = Professional.query.all()
+   
+  for obj in objData:
+    userdata = {"id": obj.id, "email": obj.email,"name": obj.name,"address":obj.address,"contact":obj.contact,"pincode":obj.pincode,"active":int(obj.active)}
+    customers.append(userdata)
+
+  return customers
 
 
 def searchServices(subtype, search):

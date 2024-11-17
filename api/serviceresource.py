@@ -1,6 +1,6 @@
 from flask_restful import Resource,Api,fields,marshal_with,reqparse
 from flask_security import auth_required,roles_required
-from flask import jsonify,make_response
+from flask import jsonify,make_response,request
 from application.models import Service
 from application.application import db
 
@@ -34,19 +34,32 @@ service_fields = {
 class ServiceAPI(Resource):
     @marshal_with(service_fields)
     def get(self,id=None,name=None,description=None,price=None):
-        if id is not None:
-            services=Service.query.get(id)
-        elif name is not None:
-            services=Service.query.filter(Service.name.like('%' + name + '%')).all()
-        elif description is not None:
-            services=Service.query.filter(Service.description.like('%' + description + '%')).all()
-        elif price is not None:
-            services=Service.query.filter(Service.price>=price).all()
+        subType = request.args.get('subType')
+        searchText = request.args.get('searchText')
+
+        print("subType: ", subType, " Search Text :", searchText)
+
+        if id:
+            services = Service.query.get(id)
         else:
-            services=Service.query.all()
+            services = Service.query.all()
+
+        if subType and searchText:
+            if subType == 'By Name':
+                services = Service.query.filter(
+                    Service.name.ilike('%' + searchText + '%')).all()
+            if subType == 'By Description':
+                services = Service.query.filter(
+                    Service.description.ilike('%' + searchText + '%')).all()
+            if subType == 'By Price':
+                services = Service.query.filter(
+                    Service.price >= searchText).all()
+        else:
+            services = Service.query.all()
+
         if services is None:
-                return jsonify({"message":"No Service Found"}),404
-        return services,200
+            return jsonify({"message": "No Service Found"}), 404
+        return services, 200
         
     def post(self):
         args=create_service_parser.parse_args()
