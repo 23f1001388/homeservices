@@ -92,7 +92,7 @@ const AdminDashboard = {
                         <td>{{customer.id}}</td>
                         <td>{{customer.email}}</td>
                         <td>{{customer.name}}</td>
-                        <td>{{customer.address}} Years</td>
+                        <td>{{customer.address}}</td>
                         <td>{{ customer.contact }}</td>
                         <td><span v-if="customer.active==1" class="badge text-bg-success">Active</span>
                             <span v-else class="badge text-bg-danger">Inactive</span></td>

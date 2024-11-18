@@ -60,30 +60,44 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
   def search_professionals(id=None):
     subType = request.args.get('subType')
     searchText = request.args.get('searchText')
-    print(subType,searchText)
+    print("From Professional ",subType,searchText)
     professionals=searchProfessionals(subType,searchText)
 
     if professionals is None:
         return jsonify({"message": "No Data Found"}), 404
+    print(professionals)
     return professionals, 200
   
   @app.route('/search/customers', methods=['GET'])
   def search_customers(id=None):
     subType = request.args.get('subType')
     searchText = request.args.get('searchText')
-    print(subType,searchText)
+    print("From Customer ",subType,searchText)
     customers=searchCustomers(subType,searchText)
 
     if customers is None:
         return jsonify({"message": "No Data Found"}), 404
+    print(customers)
     return customers, 200
+  
+  @app.route('/search/servicerequests', methods=['GET'])
+  def search_servicerequests(id=None):
+    subType = request.args.get('subType')
+    searchText = request.args.get('searchText')
+    print(subType,searchText)
+    servicerequests=searchCustomers(subType,searchText)
+
+    if servicerequests is None:
+        return jsonify({"message": "No Data Found"}), 404
+    print(servicerequests)
+    return servicerequests, 200
 
   @app.route('/admin/customers', methods=['GET'])
   def get_customers():
     users = Customer.query.all()
     customers = []
-    for user in users:
-      userdata = {"id": user.id, "email": user.email}
+    for obj in users:
+      userdata = {"id": obj.id, "email": obj.email,"name": obj.name,"address":obj.address,"contact":obj.contact,"pincode":obj.pincode,"active":int(obj.active)}
       customers.append(userdata)
     return customers,200
   

@@ -7,7 +7,7 @@ const AdminSearch = {
         <AdminNavbar/>
     </div>
 
-   <div class="row justify-content-center ps-5 pe-5">
+   <div class="row justify-content-center ps-5 pe-5" >
            <div class="col shadow-lg border p-3">
                 <div class="row">
                     <div class="col-6">
@@ -34,7 +34,15 @@ const AdminSearch = {
                 </div> 
             </div>
     </div>
-    <ServiceSearch :services="allServices" :professionals="professionals" :customers="customers" />
+    
+    <div v-if="!errorMessage">
+        <ServiceSearch :services="allServices" :professionals="professionals" :customers="customers" />
+    </div>
+    <div v-else class="row justify-content-center p-5">
+        <div class="col shadow-lg border p-3">
+            <div class="alert alert-danger fs-6" v-show="errorMessage">{{errorMessage}}</div>
+        </div>
+    </div>
     `,
     components:{
         AdminNavbar,
@@ -82,11 +90,12 @@ const AdminSearch = {
             },
         }
     },
-    mounted(){
-        this.getServices();
-    },
     methods:{
         getSearched(){
+            console.log("Searching: "+ this.searchType)
+            console.log("SubType: "+ this.subType)
+            console.log("Search Text: "+ this.searchText)
+            
             if(this.searchType == "Professional"){
                  this.getProfessionals();
             }
@@ -101,6 +110,10 @@ const AdminSearch = {
             }
         },
         getSelected(){
+            this.allServices=[];
+            this.professionals=[];
+            this.customers=[];
+
             switch (this.searchType) {
                 case 'Professional':
                   this.subTypes = this.professionalSearch;
@@ -136,7 +149,12 @@ const AdminSearch = {
                 if (result.ok) {
                     const data = await result.json();
                     console.log(data);
-                    this.allServices = data;
+                    if(data.length>0){
+                        this.allServices = data;
+                        this.errorMessage='';
+                    }
+                    this.errorMessage="No Data Found";
+                    
                 }
                 else {
                     const error = await result.json();
@@ -152,7 +170,7 @@ const AdminSearch = {
             const params = new URLSearchParams();  
             params.append('subType', this.subType); 
             params.append('searchText', this.searchText);
-            console.log(this.subType,this,searchText)
+            console.log(this.subType,this.searchText)
             try {
                 const result = await fetch(`${url}?${params.toString()}`, {
                     method: "GET",
@@ -162,10 +180,19 @@ const AdminSearch = {
                 if (result.ok) {
                     const data = await result.json();
                     console.log(data);
-                    this.professionals = data;
+                    if(data.length>0){
+                        this.professionals = data;
+                        this.errorMessage='';
+                    }
+                    else {
+                        this.professionals = [];  
+                        this.errorMessage = 'No Data Found'; 
+                    }
+
                 }
                 else {
                     const error = await result.json();
+                    this.errorMessage=error.message;
                     console.log(error);
                 }
             } catch (e) {
@@ -178,7 +205,7 @@ const AdminSearch = {
             const params = new URLSearchParams();  
             params.append('subType', this.subType); 
             params.append('searchText', this.searchText);
-            console.log(this.subType,this,searchText)
+            console.log(this.subType,this.searchText);
             try {
                 const result = await fetch(`${url}?${params.toString()}`, {
                     method: "GET",
@@ -188,10 +215,18 @@ const AdminSearch = {
                 if (result.ok) {
                     const data = await result.json();
                     console.log(data);
-                    this.customers = data;
+                    if(data.length>0){
+                        this.customers = data;
+                        this.errorMessage='';
+                    }else{
+                        this.customers=[];
+                        this.errorMessage="No Data Found";
+                    }
+
                 }
                 else {
                     const error = await result.json();
+                    this.errorMessage=error.message;
                     console.log(error);
                 }
             } catch (e) {
@@ -200,7 +235,7 @@ const AdminSearch = {
         },
         async getServiceRequests() {
             // const url = window.location.origin;
-            const url = `${window.location.origin}/search/professionals`;
+            const url = `${window.location.origin}/search/servicerequests`;
             const params = new URLSearchParams();  
             params.append('subType', this.subType); 
             params.append('searchText', this.searchText);
@@ -214,13 +249,23 @@ const AdminSearch = {
                 if (result.ok) {
                     const data = await result.json();
                     console.log(data);
-                    this.servicerequests = data;
+                    if(data.length>0){
+                        this.servicerequests = data;
+                        this.errorMessage='';
+                    }else{
+                        this.servicerequests=[];
+                        this.errorMessage="No Data Found";
+                    }
+                    
+
                 }
                 else {
                     const error = await result.json();
+                    this.errorMessage=error.message;
                     console.log(error);
                 }
             } catch (e) {
+                this.errorMessage=error.message;
                 console.log(e);
             }
         },
