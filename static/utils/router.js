@@ -12,6 +12,7 @@ import UserDetails from '../pages/admin/userdetails.js'
 import ServiceCreate from '../pages/admin/servicecreate.js'
 import ServiceEdit from '../pages/admin/serviceedit.js'
 import AdminSearch from '../pages/admin/adminsearch.js'
+import AdminSummary from '../pages/admin/adminsummary.js'
 
 
 // Professional Components/Pages
@@ -22,6 +23,7 @@ import ProfessionalProfile from '../pages/professionals/professionalprofile.js'
 import CustomerDashboard from '../pages/customers/customerdashboard.js'
 import CustomerServices from '../pages/customers/customerservices.js'
 import CustomerProfile from '../pages/customers/customerprofile.js'
+
 
 
 const routes = [
@@ -37,6 +39,7 @@ const routes = [
   { path: '/admin/service/edit/:id', component: ServiceEdit, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/users', component: UserDetails, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/search', component: AdminSearch, meta: { requiresLogin: true, role: 'admin' } },
+  { path: '/admin/summary', component: AdminSummary, meta: { requiresLogin: true, role: 'admin' } },
 
   // Professional Routes
   { path: '/professional/dashboard', component: ProfessionalDashboard, meta: { requiresLogin: true, role: 'professional' } },
