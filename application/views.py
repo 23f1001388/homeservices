@@ -359,7 +359,7 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     customerId=customer.id
     return customerId
 
-  @app.route('/servicerequests/bycustomers/<int:customerId>')
+  @app.route('/servicerequests/bycustomers/<int:userId>')
   def servicerequests_bycustomers(userId):
     customerId=getCustomerId(userId)
     servicerequests=ServiceRequest.query.filter(ServiceRequest.customer_id==customerId).all()
