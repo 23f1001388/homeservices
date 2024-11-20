@@ -10,6 +10,7 @@ import mimetypes,os
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from application.search import searchProfessionals,searchCustomers,searchServices,searchServiceRequests
+from application.summary import serviceRequestsData
 # from app import app
 
 basedir=os.path.abspath(os.path.dirname(__file__))
@@ -452,3 +453,11 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     servicerequest.status = "Rejected"  
     db.session.commit()
     return jsonify({"message": "Service Request Updated successfully"}), 200
+  
+  @app.route('/summary/servicerequestsdata', methods=['GET'])
+  def summary_requestData():    
+    requestsData=serviceRequestsData()
+    if requestsData is None:
+        return jsonify({"message": "No Data Found"}), 404
+    print("Printed from View Route: ",requestsData)
+    return requestsData, 200
