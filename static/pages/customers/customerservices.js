@@ -8,15 +8,16 @@ const CustomerServices = {
     <div class="row justify-content-center p-5">
            <div class="col shadow-lg border p-3">
                 <h4 class="text-center">Best Services in {{service.name}}</h4>
-                    
+                <span v-if="errorMessage">{{erroMessage}}</span>
                 <table class="table responsive">
                     <thead>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Price</th>
                         <th>Time(in Hrs.)</th>
-                        <th>Professional</th>
-                        <th>Actions</th>
+                        <th>Professional Id</th>
+                        <th>Name</th>
+                        <th>Actions/Status</th>
                     </thead>
                     <tbody>
                     <tr v-for="service in serviceProfessionals">
@@ -26,10 +27,13 @@ const CustomerServices = {
                         <td>{{service.service_timerequired }}</td>
                         <td>{{service.professional_id }}</td>
                         <td>{{service.professional_name }}</td>
-
                         <td>
-                            <button class="btn btn-primary btn-sm" @click="createServiceRequest(service.professional_id)"><i class="bi bi-bag-plus"></i> Book Service</button>
+                            <button v-if="service.request_status == ''" class="btn btn-primary btn-sm" @click="createServiceRequest(service.professional_id)">
+                                <i class="bi bi-bag-plus"></i> Book Service
+                            </button>
+                            <span class="badge text-bg-warning" v-else>{{ service.request_status }}</span>
                         </td>
+
                     </tr>
                     </tbody>
                 </table>
@@ -47,15 +51,18 @@ const CustomerServices = {
                         <th>Status</th>
                     </thead>
                     <tbody>
-                    <tr v-for="servicerequest in servicerequests" :key="servicerequest.id">
+                    <tr v-for="servicerequest in serviceRequests" :key="servicerequest.id">
                         <td>{{servicerequest.id}}</td>
-                        <td>{{servicerequest.name}}</td>
-                        <td>{{servicerequest.professionals.name}}</td>
-                        <td>{{ servicerequest.professionals.contact }}</td>
-                        <td>{{servicerequest.status}}</td>
+                        <td>{{servicerequest.service_name}}</td>
+                        <td>{{servicerequest.professional_name}}</td>
+                        <td>{{ servicerequest.professional_contact }}</td>
                         <td>
-                            <router-link :to="'/admin/service/edit/' + service.id" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i> Edit</router-link>
-                            <button class="btn btn-danger ms-3 btn-sm"><i class="bi bi-trash3"></i> Delete</button>
+                            <span v-if="servicerequest.status==='Requested'" class="badge text-bg-primary">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-success">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Closed'" class="badge text-bg-danger">{{servicerequest.status}}</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger rounded-3 ms-3 btn-sm"><i class="bi bi-trash3"></i> Close It ? </button>
                         </td>
                     </tr>
                     </tbody>
@@ -67,9 +74,11 @@ const CustomerServices = {
     data() {
         return {
             serviceProfessionals: [],
+            serviceRequests:[],
             service:'',
             serviceId:null,
             professionalId:'',
+            userId:'',
             customerId:'',
         }
     },
@@ -78,12 +87,14 @@ const CustomerServices = {
     },
     created(){
         this.serviceId = this.$route.params.id;
-        this.getServiceProfessional();
         const user=JSON.parse(sessionStorage.getItem('user'));
-        this.customerId=user.id;
-        // this.getService();
-        // this.getServices();
+        this.userId=user.id;
+        this.customerId=user.user_id;
       },
+    mounted(){
+        this.getServicesRequests();
+        this.getServiceProfessional();
+    },
     methods: {
         async getService() {
             const url = window.location.origin;
@@ -128,10 +139,33 @@ const CustomerServices = {
             }
         },
 
-        async getServiceProfessional() {
+        async getCustomerId() {
             const url = window.location.origin;
             try {
-                const result = await fetch(url + `/service/professionals/${this.serviceId}`, {
+                const result = await fetch(url + `/getcustomerid/${this.userId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'same-origin',
+                });
+                if (result.ok) {
+                    const data = await result.json();
+                    console.log("getCustomer Id is :" + data);
+                    this.customerId=data;
+                }
+                else {
+                    const error = await result.json();
+                    console.log(error);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+        async getServiceProfessional() {
+            const url = window.location.origin;
+            console.log("this.CustomerId" + this.customerId);
+            try {
+                const result = await fetch(url + `/service/professionals/${this.serviceId}?customerId=${this.customerId}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                     credentials: 'same-origin',
@@ -140,6 +174,29 @@ const CustomerServices = {
                     const data = await result.json();
                     console.log(data);
                     this.serviceProfessionals=data;
+                }
+                else {
+                    const error = await result.json();
+                    console.log(error);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+        async getServicesRequests() {
+            const url = window.location.origin;
+
+            try {
+                const result = await fetch(url + `/servicerequests/bycustomers/${this.customerId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'same-origin',
+                });
+                if (result.ok) {
+                    const data = await result.json();
+                    console.log("Service Request Data: ",data);
+                    this.serviceRequests = data;
                 }
                 else {
                     const error = await result.json();
@@ -159,7 +216,7 @@ const CustomerServices = {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         serviceId:this.serviceId,
-                        customerId: customerId,
+                        userId: this.userId,
                     }),
                     credentials: 'same-origin',
                 });

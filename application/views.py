@@ -20,130 +20,9 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
   # @app.route('/static/<path:path>')
   # def static_proxy(path):
   #   return send_from_directory(app.static_folder, path)
-  @app.route('/createUser')
-  def createUser(user_datastore:SQLAlchemyUserDatastore,useremail,userpassword,userrole):
-   if not user_datastore.find_user(email=useremail):
-      user_datastore.create_user(email=useremail,
-                                 password=hash_password(userpassword),
-                                 active=True,
-                                 roles=[userrole])
-      db.session.commit()
-      return True
-   else:
-      return False
 
-  @app.route('/admin/users', methods=['GET'])
-  def get_users():
-    users = User.query.all()  # Get all users
-    users_data = []
+  #******************Index Login Registeration adn Logout*********************
 
-    for user in users:
-        user_info = {
-            'id': user.id,
-            'email': user.email,
-            'roles': [role.name for role in user.roles]  # Get roles associated with the user
-        }
-        users_data.append(user_info)
-    print(users_data)
-
-    return jsonify(users_data)
-
-  @app.route('/admin/professionals', methods=['GET'])
-  def get_professionals():
-    users = Professional.query.all()
-    professionals = []
-    for user in users:
-      userdata = {"id": user.id, "email": user.email,"name": user.name,"experience":user.experience,"services":[service.name for service in user.services],"active":int(user.active)}
-      professionals.append(userdata)
-    return jsonify(professionals),200
-  
-  @app.route('/search/professionals', methods=['GET'])
-  def search_professionals(id=None):
-    subType = request.args.get('subType')
-    searchText = request.args.get('searchText')
-    print("From Professional ",subType,searchText)
-    professionals=searchProfessionals(subType,searchText)
-
-    if professionals is None:
-        return jsonify({"message": "No Data Found"}), 404
-    print(professionals)
-    return professionals, 200
-  
-  @app.route('/search/customers', methods=['GET'])
-  def search_customers(id=None):
-    subType = request.args.get('subType')
-    searchText = request.args.get('searchText')
-    print("From Customer ",subType,searchText)
-    customers=searchCustomers(subType,searchText)
-
-    if customers is None:
-        return jsonify({"message": "No Data Found"}), 404
-    print(customers)
-    return customers, 200
-  
-  @app.route('/search/servicerequests', methods=['GET'])
-  def search_servicerequests(id=None):
-    subType = request.args.get('subType')
-    searchText = request.args.get('searchText')
-    print(subType,searchText)
-    servicerequests=searchCustomers(subType,searchText)
-
-    if servicerequests is None:
-        return jsonify({"message": "No Data Found"}), 404
-    print(servicerequests)
-    return servicerequests, 200
-
-  @app.route('/admin/customers', methods=['GET'])
-  def get_customers():
-    users = Customer.query.all()
-    customers = []
-    for obj in users:
-      userdata = {"id": obj.id, "email": obj.email,"name": obj.name,"address":obj.address,"contact":obj.contact,"pincode":obj.pincode,"active":int(obj.active)}
-      customers.append(userdata)
-    return customers,200
-  
-  @app.route('/service/professionals')
-  def getServiceProfessionals():
-    serviceProfessionals = ServiceProfessional.query.all()
-    objectData=[]
-    count=1
-    for data in serviceProfessionals:
-      service_id=data.service_id
-      service=Service.query.filter(Service.id==service_id).first()
-      for professional in service.professionals:
-        obj={
-          "id":count,
-          "service_id":service.id,
-          "service_name":service.name,
-          "service_price":service.price,
-          "service_timerequired":service.timerequired,
-          "professional_id":professional.id,
-          "professional_name":professional.name
-        }
-        objectData.append(obj)
-        count+=1
-    return objectData, 200
-  
-
-  @app.route('/service/professionals/<int:service_id>')
-  def getServiceProfessionalsbyService(service_id):
-    objectData=[]
-    count=1
-    service=Service.query.filter(Service.id==service_id).first()
-    for professional in service.professionals:
-      obj={
-        "id":count,
-        "service_id":service.id,
-        "service_name":service.name,
-        "service_price":service.price,
-        "service_timerequired":service.timerequired,
-        "professional_id":professional.id,
-        "professional_name":professional.name
-      }
-      objectData.append(obj)
-      count+=1
-    return objectData, 200
-  
   @app.route('/', defaults={'path': ''})
   @app.route('/<path:path>')
   def index(path):
@@ -161,7 +40,6 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
   def logout():
     logout_user()
     return render_template('index.html')
-    
   
   @app.route('/userlogin',methods=['POST'])
   def userLogin():
@@ -178,7 +56,22 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
       return jsonify({"message": "User not Registered. Please register."}),404
     
     if verify_password(password,user.password):
-      return jsonify({"token":user.get_auth_token(),"role":user.roles[0].name,"id" : user.id, "email" : user.email }), 200
+      token=user.get_auth_token()
+      role=user.roles[0].name
+      if role=='customer':
+        user_id=user.customer.id
+      if role=="professional":
+        user_id==user.professional.id
+
+      userData={
+        "id" : user.id,
+        "email" : user.email,
+        "token":token,
+        "role":role,
+        "user_id":user_id 
+      }
+      return jsonify(userData),200
+      # return jsonify({"token":user.get_auth_token(),"role":user.roles[0].name,"id" : user.id, "email" : user.email }), 200
     else:
       return jsonify({"message" : "Wrong password"}),404
 
@@ -235,8 +128,6 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     fileupload = request.files.get('file')
     active=True
 
-    print(service_id)
-    
     if not email or not password or not name or not description: 
       return jsonify({"message": "Some fields email/password/name/description are blank"}),404
     elif not address or not pincode or not contact or not experience or not fileupload: 
@@ -249,27 +140,24 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
           upload_directory = os.path.join(os.path.dirname(__file__), '..','uploads')
             # Create the uploads directory if it doesn't exist
           os.makedirs(upload_directory, exist_ok=True)
-
-          # file_path = os.path.join(upload_directory, fileupload.filename)
-          # file_path = os.path.join(basedir,'/uploads/',fileupload.filename)
-          # print(upload_directory,file_path)
           filename = secure_filename(fileupload.filename)
           file_name, file_extension = os.path.splitext(filename)
           new_filename = f"{email}{file_extension}" 
           file_path = os.path.join(upload_directory, new_filename)
           fileupload.save(file_path)
           try:
-            newProfessional=Professional(email=email,name=name,description=description,address=address,pincode=pincode,contact=contact,experience=experience,filepath=file_path,active=active)
-            # service = Service.query.filter_by(name=service_name).first()
-            # services = Service.query.filter(Service.name.in_(service_names)).all()
+            user=user_datastore.create_user(email=email,
+                                    password=hash_password(password),
+                                    active=True,
+                                    roles=['professional'])
+            db.session.commit()
+            
+            newProfessional=Professional(email=email,name=name,description=description,address=address,pincode=pincode,contact=contact,experience=experience,filepath=file_path,active=active,user_id=user.id)
             service = Service.query.get(service_id)  # Get the Service object by ID
             if not service:
                 return jsonify({"message": "Invalid service selected"}), 404  # Handle invalid service ID
             newProfessional.services.append(service)
-            user_datastore.create_user(email=email,
-                                    password=hash_password(password),
-                                    active=True,
-                                    roles=['professional'])
+            
             db.session.add(newProfessional)
             db.session.commit()
             return jsonify({"message":"Professional Registered Successfully"}),200
@@ -278,6 +166,75 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
             return jsonify({"message":"Error: " + str(e)}),404
       else:
         return jsonify({"message":"Professional aleady Exists"}),404
+      
+  @app.route('/register/customer',methods=['POST'])
+  def registerCustomer():
+    data=request.get_json()
+    email=data.get('email')
+    password=data.get('password')
+    name=data.get('name')
+    address=data.get('address')
+    pincode=data.get('pincode')
+    contact=data.get('contact')
+    active=True
+    # print(data)
+    if not email or not password or not name or not address or not pincode or not contact :
+      return jsonify({"message": "Some fields are blank"}),404
+    else:
+      if not user_datastore.find_user(email=email):
+        try:
+          user=user_datastore.create_user(email=email,
+                                  password=hash_password(password),
+                                  active=True,
+                                  roles=['customer'])
+          db.session.commit()
+          newCustomer=Customer(email=email,name=name,address=address,pincode=pincode,contact=contact,active=active,user_id=user.id)
+          db.session.add(newCustomer)
+          db.session.commit()
+          return jsonify({"message":"Customer Registered Successfully"}),200
+        except Exception as e:
+          db.session.rollback()
+          return jsonify({"message":{e}}),404
+      else:
+        return jsonify({"message":"Customer aleady Exists"}),404
+  
+
+  #******************Admin Functions*********************************
+
+  @app.route('/admin/users', methods=['GET'])
+  def get_users():
+    users = User.query.all()  # Get all users
+    users_data = []
+
+    for user in users:
+        user_info = {
+            'id': user.id,
+            'email': user.email,
+            'roles': [role.name for role in user.roles]  # Get roles associated with the user
+        }
+        users_data.append(user_info)
+    print(users_data)
+
+    return jsonify(users_data)
+
+  @app.route('/admin/professionals', methods=['GET'])
+  def get_professionals():
+    users = Professional.query.all()
+    professionals = []
+    for user in users:
+      userdata = {"id": user.id, "email": user.email,"name": user.name,"experience":user.experience,"services":[service.name for service in user.services],"active":int(user.active)}
+      professionals.append(userdata)
+    return jsonify(professionals),200
+  
+
+  @app.route('/admin/customers', methods=['GET'])
+  def get_customers():
+    users = Customer.query.all()
+    customers = []
+    for obj in users:
+      userdata = {"id": obj.id, "email": obj.email,"name": obj.name,"address":obj.address,"contact":obj.contact,"pincode":obj.pincode,"active":int(obj.active)}
+      customers.append(userdata)
+    return customers,200
 
   @app.route('/admin/approveprofessional/<int:id>', methods=['PUT'])
   def approve_professional(id):
@@ -296,38 +253,6 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     professional.active = False  
     db.session.commit()
     return jsonify({"message": "Professional Updated successfully"}), 200
-
-  @app.route('/register/customer',methods=['POST'])
-  def registerCustomer():
-    data=request.get_json()
-    email=data.get('email')
-    password=data.get('password')
-    name=data.get('name')
-    address=data.get('address')
-    pincode=data.get('pincode')
-    contact=data.get('contact')
-    active=True
-    # print(data)
-    if not email or not password or not name or not address or not pincode or not contact :
-      return jsonify({"message": "Some fields are blank"}),404
-    else:
-      if not user_datastore.find_user(email=email):
-        try:
-          newCustomer=Customer(email=email,name=name,address=address,pincode=pincode,contact=contact,active=active)
-          
-          user_datastore.create_user(email=email,
-                                  password=hash_password(password),
-                                  active=True,
-                                  roles=['customer'])
-        
-          db.session.add(newCustomer)
-          db.session.commit()
-          return jsonify({"message":"Customer Registered Successfully"}),200
-        except Exception as e:
-          db.session.rollback()
-          return jsonify({"message":{e}}),404
-      else:
-        return jsonify({"message":"Customer aleady Exists"}),404
     
   @app.route('/admin/approvecustomer/<int:id>', methods=['PUT'])
   def approve_customer(id):
@@ -347,27 +272,99 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     db.session.commit()
     return jsonify({"message": "Customer Updated successfully"}), 200
   
-  def getProfessionalId(userId):
-    user=User.query.get(userId)
-    professional=Professional.query.filter_by(email=user.email).first()
-    professionalId=professional.id
-    return professionalId
+  #***********************Admin Funcitons End**************************
 
-  def getCustomerId(userId):
-    user=User.query.get(userId)
-    customer=Customer.query.filter_by(email=user.email).first()
-    customerId=customer.id
-    return customerId
+  #***********************Service Related Functions********************
 
+  @app.route('/service/professionals')
+  def getServiceProfessionals():
+    serviceProfessionals = ServiceProfessional.query.all()
+    objectData=[]
+    count=1
+    for data in serviceProfessionals:
+      service_id=data.service_id
+      service=Service.query.filter(Service.id==service_id).first()
+      for professional in service.professionals:
+        obj={
+          "id":count,
+          "service_id":service.id,
+          "service_name":service.name,
+          "service_price":service.price,
+          "service_timerequired":service.timerequired,
+          "professional_id":professional.id,
+          "professional_name":professional.name
+        }
+        objectData.append(obj)
+        count+=1
+    return objectData, 200
+
+  @app.route('/service/professionals/<int:service_id>')
+  def getServiceProfessionalsbyService(service_id):
+    objectData=[]
+    count=1
+    customerId = request.args.get('customerId')
+    service=Service.query.filter(Service.id==service_id).first()
+    for professional in service.professionals:
+      servicerequest=ServiceRequest.query.filter(ServiceRequest.service_id==service_id,
+                                                 ServiceRequest.professional_id==professional.id,
+                                                 ServiceRequest.customer_id==customerId).first()
+      status = servicerequest.status if servicerequest else ''
+      print("Service Request Status:",status)
+      obj={
+        "id":count,
+        "service_id":service.id,
+        "service_name":service.name,
+        "service_price":service.price,
+        "service_timerequired":service.timerequired,
+        "professional_id":professional.id,
+        "professional_name":professional.name,
+        "request_status":status
+      }
+      objectData.append(obj)
+      count+=1
+    return objectData, 200
+  
+  #*******************Service Funcitons End****************************
+
+  #*******************Service Requests Function Start******************
+  @app.route('/servicerequest/create/<int:professional_id>',methods=['POST'])
+  def serviceRequest_creation(professional_id):
+    data=request.get_json()
+
+    service_id = data.get('serviceId')
+    customer_id = getCustomerId(data.get('userId'))
+    professional_id = professional_id
+    requestdate = datetime.now()
+    status = "Requested"  #requested/assigned/closed
+   
+    print(customer_id,professional_id)
+
+    if not service_id or not customer_id or not professional_id:
+      return jsonify({"message": "Some fields are blank"}),404
+    else:
+        try:
+          newServiceRequest=ServiceRequest(service_id=service_id,customer_id=customer_id,
+                                           professional_id=professional_id,requestdate=requestdate,
+                                           status=status)
+          
+          
+          db.session.add(newServiceRequest)
+          db.session.commit()
+          return jsonify({"message":"ServiceRequest created Successfully"}),200
+        except Exception as e:
+          db.session.rollback()
+          return jsonify({"message":{e}}),404
+        
   @app.route('/servicerequests/bycustomers/<int:userId>')
   def servicerequests_bycustomers(userId):
     customerId=getCustomerId(userId)
+    print("Customer Id is:",customerId)
     servicerequests=ServiceRequest.query.filter(ServiceRequest.customer_id==customerId).all()
     dataObject=[]
     for servicerequest in servicerequests:
       service=Service.query.filter(Service.id==servicerequest.service_id).first()
-      professionalId=getProfessionalId(servicerequest.professional_id)
-      professional=Professional.query.filter(Professional.id==servicerequest.professionalId).first()
+      professionalId=servicerequest.professional_id
+      professional=Professional.query.filter(Professional.id==professionalId).first()
       data={
         "id":servicerequest.id,
         "service_id":service.id,
@@ -377,12 +374,11 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
         "status":servicerequest.status
       } 
       dataObject.append(data)
+      print(dataObject)
     return dataObject,200
   
-  
-  
   @app.route('/servicerequests/byprofessionals/<int:userId>')
-  def servicerequests_byprofeesional(userId):
+  def servicerequests_byprofessional(userId):
     professionalId=getProfessionalId(userId)
     servicerequests=ServiceRequest.query.filter(ServiceRequest.professional_id==professionalId).all()
     print("Professional Id: ",professionalId)
@@ -407,35 +403,63 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
       } 
       dataObject.append(data)
     return dataObject,200
+ 
 
-  @app.route('/servicerequest/create/<int:professional_id>',methods=['POST'])
-  def serviceRequest_creation(professional_id):
-    data=request.get_json()
+ #*******************ServiceRequest Function End***********************
 
-    service_id = data.get('serviceId')
-    customer_id = data.get('customerId')
-    professional_id = professional_id
-    requestdate = datetime.now()
-    status = "Requested"  #requested/assigned/closed
-   
-    print(customer_id,professional_id)
+ #*******************Search Fucntions Start****************************
 
-    if not service_id or not customer_id or not professional_id:
-      return jsonify({"message": "Some fields are blank"}),404
-    else:
-        try:
-          newServiceRequest=ServiceRequest(service_id=service_id,customer_id=customer_id,
-                                           professional_id=professional_id,requestdate=requestdate,
-                                           status=status)
-          
-          
-          db.session.add(newServiceRequest)
-          db.session.commit()
-          return jsonify({"message":"ServiceRequest created Successfully"}),200
-        except Exception as e:
-          db.session.rollback()
-          return jsonify({"message":{e}}),404
-        
+  @app.route('/search/professionals', methods=['GET'])
+  def search_professionals(id=None):
+    subType = request.args.get('subType')
+    searchText = request.args.get('searchText')
+    print("From Professional ",subType,searchText)
+    professionals=searchProfessionals(subType,searchText)
+
+    if professionals is None:
+        return jsonify({"message": "No Data Found"}), 404
+    print(professionals)
+    return professionals, 200
+  
+  @app.route('/search/customers', methods=['GET'])
+  def search_customers(id=None):
+    subType = request.args.get('subType')
+    searchText = request.args.get('searchText')
+    print("From Customer ",subType,searchText)
+    customers=searchCustomers(subType,searchText)
+
+    if customers is None:
+        return jsonify({"message": "No Data Found"}), 404
+    print(customers)
+    return customers, 200
+  
+  @app.route('/search/servicerequests', methods=['GET'])
+  def search_servicerequests(id=None):
+    subType = request.args.get('subType')
+    searchText = request.args.get('searchText')
+    print(subType,searchText)
+    servicerequests=searchCustomers(subType,searchText)
+
+    if servicerequests is None:
+        return jsonify({"message": "No Data Found"}), 404
+    print(servicerequests)
+    return servicerequests, 200
+  
+#********************Serach Functions End******************************
+
+#***************************Sumamry Functions Start******************** 
+  @app.route('/summary/servicerequestsdata', methods=['GET'])
+  def summary_requestData():    
+    requestsData=serviceRequestsData()
+    if requestsData is None:
+        return jsonify({"message": "No Data Found"}), 404
+    print("Printed from View Route: ",requestsData)
+    return requestsData, 200
+
+#***************************Sumamry Functions End********************
+
+#***************************Professional Functions Start********************
+
   @app.route('/professional/servicerequest/approve/<int:id>', methods=['PUT'])
   def servicerequest_approve(id):
     servicerequest = ServiceRequest.query.get(id)
@@ -453,11 +477,37 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     servicerequest.status = "Rejected"  
     db.session.commit()
     return jsonify({"message": "Service Request Updated successfully"}), 200
+
+#***************************Professional Functions Start********************
+
+#******************Other Utility Functions Start***********************
+
+  def getProfessionalId(userId):
+    user=User.query.get(userId)
+    return user.professional.id
   
-  @app.route('/summary/servicerequestsdata', methods=['GET'])
-  def summary_requestData():    
-    requestsData=serviceRequestsData()
-    if requestsData is None:
-        return jsonify({"message": "No Data Found"}), 404
-    print("Printed from View Route: ",requestsData)
-    return requestsData, 200
+  @app.route('/getprofessionalid/<int:userId>',methods=['GET'])
+  def returnProfessionalId(userId):
+    professionalId=getProfessionalId(userId)
+    return jsonify(professionalId),200
+  
+  def getCustomerId(userId):
+    user=User.query.get(userId)
+    return user.customer.id
+  
+  @app.route('/getcustomerid/<int:userId>',methods=['GET'])
+  def returnCustomerId(userId):
+    customerId=getCustomerId(userId)
+    return jsonify(customerId),200  
+  
+  @app.route('/createUser')
+  def createUser(user_datastore:SQLAlchemyUserDatastore,useremail,userpassword,userrole):
+   if not user_datastore.find_user(email=useremail):
+      user_datastore.create_user(email=useremail,
+                                 password=hash_password(userpassword),
+                                 active=True,
+                                 roles=[userrole])
+      db.session.commit()
+      return True
+   else:
+      return False

@@ -14,6 +14,8 @@ class User(db.Model, UserMixin):
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     roles = db.relationship('Role', secondary='users_roles', backref='user')
     active = db.Column(db.Boolean,default=True)
+    professional=db.relationship('Professional',backref='user',uselist=False)
+    customer=db.relationship('Customer',backref='user',uselist=False)
     timestamp = db.Column(db.DateTime, default=datetime.now())
 
 
@@ -67,6 +69,7 @@ class Professional(db.Model):
     servicerequests = db.relationship(
         'ServiceRequest', backref='professionals',
         lazy=True)  # One to Many Relationship with ServiceRequests
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.now())
 
 
@@ -95,6 +98,7 @@ class Customer(db.Model):
     servicerequests = db.relationship(
         'ServiceRequest', backref='customers',
         lazy=True)  # One to Many Relationship with ServiceRequests
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.now())
 
 

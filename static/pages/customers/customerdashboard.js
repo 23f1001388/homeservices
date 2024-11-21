@@ -64,6 +64,7 @@ const CustomerDashboard = {
     created(){
         const user=JSON.parse(sessionStorage.getItem('user'));
         this.customerId=user.id;
+        console.log("User Id is: " ,user.id);
     },  
     mounted() {
         this.getServicesRequests();
