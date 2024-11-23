@@ -5,8 +5,8 @@ const AdminDashboard = {
     <div>
         <AdminNavbar/>
     </div>
-    <div class="row justify-content-center ps-5 pe-5">
-           <div class="col shadow-lg border p-3">
+    <div class="row justify-content-center p-5">
+           <div class="col shadow-lg border p-3 rounded-5">
                 <div class="d-flex justify-content-between">
                         <h4>Services</h4>
                         <router-link to="/admin/service/create" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i> Add Service</router-link>
@@ -40,8 +40,8 @@ const AdminDashboard = {
             </div>
     </div>
 
-    <div class="row justify-content-center ps-5 pe-5">
-           <div class="col shadow-lg border p-3 border">
+    <div class="row justify-content-center p-5">
+           <div class="col shadow-lg border p-3 border rounded-5">
                 <h3>Professionals</h3>
                 <table class="table responsive">
                     <thead>
@@ -63,9 +63,8 @@ const AdminDashboard = {
                         <td><span v-if="professional.active==1" class="badge text-bg-success">Active</span>
                             <span v-else class="badge text-bg-danger">Inactive</span></td>
                         <td>
-                            <button class="btn btn-success btn-sm" @click="approveProfessional(professional.id)"><i class="bi bi-check-circle"></i> Approve</button>
-                            <button class="btn btn-warning btn-sm ms-3" @click="rejectProfessional(professional.id)"><i class="bi bi-x-circle"></i> Reject</button>
-                            <button class="btn btn-danger ms-3 btn-sm"><i class="bi bi-trash3"></i> Delete</button>
+                            <button v-if="professional.active!=1" class="btn btn-success btn-sm" @click="approveProfessional(professional.id)"><i class="bi bi-check-circle"></i> Approve</button>
+                            <button v-if="professional.active==1" class="btn btn-danger btn-sm ms-3" @click="rejectProfessional(professional.id)"><i class="bi bi-x-circle"></i> Reject</button>
                         </td>
                     </tr>
                     </tbody>
@@ -75,7 +74,7 @@ const AdminDashboard = {
     </div>
 
         <div class="row justify-content-center ps-5 pe-5">
-           <div class="col shadow-lg border p-3 border">
+           <div class="col shadow-lg border p-3 border rounded-5">
                 <h3>Customers</h3>
                 <table class="table responsive">
                     <thead>
@@ -97,9 +96,8 @@ const AdminDashboard = {
                         <td><span v-if="customer.active==1" class="badge text-bg-success">Active</span>
                             <span v-else class="badge text-bg-danger">Inactive</span></td>
                         <td>
-                            <button class="btn btn-success btn-sm" @click="approveCustomer(customer.id)"><i class="bi bi-check-circle"></i> Approve</button>
-                            <button class="btn btn-warning btn-sm ms-3" @click="rejectCustomer(customer.id)"><i class="bi bi-x-circle"></i> Reject</button>
-                            <button class="btn btn-danger ms-3 btn-sm"><i class="bi bi-trash3"></i> Delete</button>
+                            <button v-if="customer.active!=1" class="btn btn-success btn-sm" @click="approveCustomer(customer.id)"><i class="bi bi-check-circle"></i> Approve</button>
+                            <button v-if="customer.active==1" class="btn btn-danger btn-sm ms-3" @click="rejectCustomer(customer.id)"><i class="bi bi-x-circle"></i> Reject</button>
                         </td>
                     </tr>
                     </tbody>

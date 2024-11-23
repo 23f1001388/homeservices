@@ -115,7 +115,7 @@ class ServiceRequest(db.Model):
     requestdate = db.Column(db.String, nullable=False)
     completiondate = db.Column(db.String)
     status = db.Column(db.String(10),
-                       nullable=False)  #requested/assigned/closed
+                       nullable=False)  #Requested/Assigned/Accepted/Closed
     ratings = db.Column(db.Integer)  #1 to 5 Stars
     remarks = db.Column(db.String(200))  #Feedback of Customer
     timestamp = db.Column(db.DateTime, default=datetime.now())

@@ -9,16 +9,16 @@ const CustomerDashboard = {
             <h4 class="text-center">Looking For ?</h4>
             <div v-for="service in serviceProfessionals" :key="service.id" class="cols-4 shadow-lg border p-3 rounded-5 m-2 d-flex flex-column justify-content-between">
                 <h5 class="text-center">{{ service.service_name }}</h5>
-                <p><strong>Service Price:</strong> Rs. {{ service.service_price }}</p>
-                <p><strong>Time Required:</strong> {{ service.service_timerequired }}  Hours</p>
-                <p><strong>Professional Id:</strong> {{ service.professional_id }}</p>
-                <p><strong>Professional Name:</strong> {{ service.professional_name }}</p>                
+                <p class="text-center"><strong>Service Price:</strong> Rs. {{ service.service_price }}</p>
+                <p class="text-center"><strong>Time Required:</strong> {{ service.service_timerequired }}  Hours</p>
+                <p class="text-center"><strong>Professional Id:</strong> {{ service.professional_id }}</p>
+                <p class="text-center"><strong>Professional Name:</strong> {{ service.professional_name }}</p>                
                 <router-link :to="'/customer/services/' + service.service_id" class="btn btn-dark mx-auto btn-sm"><i class="bi bi-binoculars"></i> Explore</router-link>
             </div>
     </div>
 
     <div class="row justify-content-center p-5">
-           <div class="col shadow-lg border p-3">
+           <div class="col shadow-lg border p-3 rounded-5">
                 <h4>Service History</h4>
                 <table class="table responsive">
                     <thead>
@@ -37,11 +37,12 @@ const CustomerDashboard = {
                         <td>{{ servicerequest.professional_contact }}</td>
                         <td>
                             <span v-if="servicerequest.status==='Requested'" class="badge text-bg-primary">{{servicerequest.status}}</span>
-                            <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-success">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-warning">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Accepted'" class="badge text-bg-success">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Closed'" class="badge text-bg-danger">{{servicerequest.status}}</span>
                         </td>
                         <td>
-                            <button class="btn btn-danger rounded-3 ms-3 btn-sm"><i class="bi bi-trash3"></i> Close It ? </button>
+                            <router-link :to="'/customer/feedback/' + servicerequest.id" class="btn btn-danger rounded-3 ms-3 btn-sm"><i class="bi bi-trash3"></i> Close It ? </router-link>
                         </td>
                     </tr>
                     </tbody>
@@ -63,7 +64,7 @@ const CustomerDashboard = {
     },
     created(){
         const user=JSON.parse(sessionStorage.getItem('user'));
-        this.customerId=user.id;
+        this.customerId=user.user_id;
         console.log("User Id is: " ,user.id);
     },  
     mounted() {
@@ -81,6 +82,7 @@ const CustomerDashboard = {
                 });
                 if (result.ok) {
                     const data = await result.json();
+                    console.log(data);
                     this.services = data;
                 }
                 else {

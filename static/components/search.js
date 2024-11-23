@@ -1,8 +1,8 @@
-const ServiceSearch={
+const Search={
     template:`
-    <div class="row justify-content-center ps-5 pe-5" v-if="services.length>0">
-           <div class="col shadow-lg border p-3"> 
-                <h4>Services</h4>
+    <div class="row justify-content-center p-5" v-if="services.length>0">
+           <div class="col shadow-lg border p-3 rounded-5"> 
+                <h4>Services  Search Result</h4>
                 <table class="table responsive">
                     <thead>
                         <th>ID</th>
@@ -28,9 +28,9 @@ const ServiceSearch={
             </div>
     </div>
     
-    <div class="row justify-content-center ps-5 pe-5" v-if="professionals.length>0">
-           <div class="col shadow-lg border p-3 border">
-                <h3>Professionals</h3>
+    <div class="row justify-content-center p-5" v-if="professionals.length>0">
+           <div class="col shadow-lg border p-3 border rounded-5">
+                <h4>Professionals Search Result</h4>
                 <table class="table responsive">
                     <thead>
                         <th>ID</th>
@@ -50,10 +50,9 @@ const ServiceSearch={
                         <td>{{ professional.services.join(', ') }}</td>
                         <td><span v-if="professional.active==1" class="badge text-bg-success">Active</span>
                             <span v-else class="badge text-bg-danger">Inactive</span></td>
-                        <td>
-                            <button class="btn btn-success btn-sm" @click="approveProfessional(professional.id)"><i class="bi bi-check-circle"></i> Approve</button>
-                            <button class="btn btn-warning btn-sm ms-3" @click="rejectProfessional(professional.id)"><i class="bi bi-x-circle"></i> Reject</button>
-                            <button class="btn btn-danger ms-3 btn-sm"><i class="bi bi-trash3"></i> Delete</button>
+                        <td v-if="role=='admin'">
+                           <button v-if="professional.active!=1" class="btn btn-success btn-sm" @click="approveProfessional(professional.id)"><i class="bi bi-check-circle"></i> Approve</button>
+                            <button v-if="professional.active==1" class="btn btn-danger btn-sm ms-3" @click="rejectProfessional(professional.id)"><i class="bi bi-x-circle"></i> Reject</button>
                         </td>
                     </tr>
                     </tbody>
@@ -61,9 +60,9 @@ const ServiceSearch={
                 </table>
             </div>
     </div>
-    <div class="row justify-content-center ps-5 pe-5" v-if="customers.length>0">
-           <div class="col shadow-lg border p-3 border">
-                <h3>Customers</h3>
+    <div class="row justify-content-center p-5" v-if="customers.length>0">
+           <div class="col shadow-lg border p-3 border rounded-5">
+                <h4>Customers  Search Result</h4>
                 <table class="table responsive">
                     <thead>
                         <th>Id</th>
@@ -83,10 +82,43 @@ const ServiceSearch={
                         <td>{{ customer.contact }}</td>
                         <td><span v-if="customer.active==1" class="badge text-bg-success">Active</span>
                             <span v-else class="badge text-bg-danger">Inactive</span></td>
+                        <td v-if="role=='admin'">
+                             <button v-if="customer.active!=1" class="btn btn-success btn-sm" @click="approveCustomer(customer.id)"><i class="bi bi-check-circle"></i> Approve</button>
+                            <button v-if="customer.active==1" class="btn btn-danger btn-sm ms-3" @click="rejectCustomer(customer.id)"><i class="bi bi-x-circle"></i> Reject</button>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+    </div>
+
+    <div class="row justify-content-center p-5" v-if="servicerequests.length>0">
+           <div class="col shadow-lg border p-3 border rounded-5">
+                <h4>Service Request  Search Result</h4>
+                <table class="table responsive">
+                    <thead>
+                        <th>ID</th>
+                        <th>Service Name</th>
+                        <th>Professional Name</th>
+                        <th>Phone No</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+                    <tr v-for="servicerequest in servicerequests" :key="servicerequest.id">
+                        <td>{{servicerequest.id}}</td>
+                        <td>{{servicerequest.service_name}}</td>
+                        <td>{{servicerequest.professional_name}}</td>
+                        <td>{{ servicerequest.professional_contact }}</td>
                         <td>
-                            <button class="btn btn-success btn-sm" @click="approveCustomer(customer.id)"><i class="bi bi-check-circle"></i> Approve</button>
-                            <button class="btn btn-warning btn-sm ms-3" @click="rejectCustomer(customer.id)"><i class="bi bi-x-circle"></i> Reject</button>
-                            <button class="btn btn-danger ms-3 btn-sm"><i class="bi bi-trash3"></i> Delete</button>
+                            <span v-if="servicerequest.status==='Requested'" class="badge text-bg-primary">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-warning">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Accepted'" class="badge text-bg-success">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Closed'" class="badge text-bg-danger">{{servicerequest.status}}</span>
+                        </td>
+                        <td>
+                            <router-link :to="'/customer/feedback/' + servicerequest.id" class="btn btn-danger rounded-3 ms-3 btn-sm"><i class="bi bi-trash3"></i> Close It ? </router-link>
                         </td>
                     </tr>
                     </tbody>
@@ -99,7 +131,12 @@ const ServiceSearch={
     data(){
         return{
             errormessage:'',
+            role:'',
         }
+    },
+    created() {
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        this.role = user.role;
     },
     props: {
         services: {
@@ -113,6 +150,11 @@ const ServiceSearch={
             default: () => []  
           },
           customers: {
+            type: Array, 
+            required: true, 
+            default: () => []  
+          },
+          servicerequests: {
             type: Array, 
             required: true, 
             default: () => []  
@@ -221,4 +263,4 @@ const ServiceSearch={
       }
 }
 
-export default ServiceSearch
+export default Search

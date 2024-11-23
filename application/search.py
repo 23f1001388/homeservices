@@ -1,5 +1,6 @@
 from application.models import Service, Professional, Customer, ServiceRequest
 from enum import Enum
+from application.common import format_date,format_datetime
 
 class SearchType(Enum):
     BY_NAME = "By Name"
@@ -14,9 +15,10 @@ class SearchType(Enum):
     BY_RATINGS="By Ratings"
     BY_REMARKS="By Remarks"
     BY_REQUESTDATE="By RequestDate"
-    BY_SERVICEID="By ServiceId"
-    BY_PROFESSIONALID="By ProfessionalId"
-    BY_CUSTOMERID="By CustomerId"
+
+    BY_SERVICEID="By Service"
+    BY_PROFESSIONALID="By Professional"
+    BY_CUSTOMERID="By Customer"
     
 
 def searchProfessionals(subtype, search):
@@ -90,10 +92,11 @@ def searchServices(subtype, search):
 
 
 def searchServiceRequests(subtype, search):
-  servicereuqests=[]
-  objData=None
+  servicerequests=[]
+  servicerequest=None
   subtype = SearchType(subtype)
 
+  print(subtype,search)
   if subtype == SearchType.BY_SERVICEID:
     objData = ServiceRequest.query.filter(ServiceRequest.service_id==search).all()
   elif subtype == SearchType.BY_PROFESSIONALID:
@@ -106,7 +109,30 @@ def searchServiceRequests(subtype, search):
     objData = ServiceRequest.query.filter(ServiceRequest.remarks.like('%' + search + '%')).all()
     
   if objData:
-    for obj in objData:
-      userdata = {"id": obj.id, "name": obj.name,"description":obj.description,"price":obj.price,"timerequired":obj.timerequired}
-      servicereuqests.append(userdata)
-  return servicereuqests
+    for servicerequest in objData:
+      service=Service.query.filter(Service.id==servicerequest.service_id).first()
+      professionalId=servicerequest.professional_id
+      professional=Professional.query.filter(Professional.id==professionalId).first()
+      customerId=servicerequest.customer_id
+      customer=Customer.query.filter(Customer.id==customerId).first()
+      
+      data={
+      "id":servicerequest.id,
+      "requestdate":format_datetime(servicerequest.requestdate),
+      "completiondate":format_datetime(servicerequest.completiondate),
+      "status":servicerequest.status,
+      "rating":servicerequest.ratings,
+      "remarks":servicerequest.remarks,
+      "service_id":service.id,
+      "service_name":service.name,
+      "service_description":service.description,
+      "professional_id":professional.id,
+      "professional_name":professional.name,
+      "professional_contact":professional.contact,
+      "customer_name":customer.name,
+      "customer_contact":customer.contact,
+      "customer_address":customer.address,
+      "customer_pincode":customer.pincode  
+      } 
+      servicerequests.append(data)
+  return servicerequests

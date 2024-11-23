@@ -33,27 +33,22 @@ service_fields = {
 
 class ServiceAPI(Resource):
     @marshal_with(service_fields)
-    def get(self,id=None,name=None,description=None,price=None):
+    def get(self,id=None):
         subType = request.args.get('subType')
         searchText = request.args.get('searchText')
-
-        print("subType: ", subType, " Search Text :", searchText)
-
-        if id:
-            services = Service.query.get(id)
-        else:
-            services = Service.query.all()
-
+        
         if subType and searchText:
             if subType == 'By Name':
                 services = Service.query.filter(
-                    Service.name.ilike('%' + searchText + '%')).all()
+                    Service.name.like('%' + searchText + '%')).all()
             if subType == 'By Description':
                 services = Service.query.filter(
-                    Service.description.ilike('%' + searchText + '%')).all()
+                    Service.description.like('%' + searchText + '%')).all()
             if subType == 'By Price':
                 services = Service.query.filter(
                     Service.price >= searchText).all()
+        elif id:
+            services = Service.query.get(id)
         else:
             services = Service.query.all()
 

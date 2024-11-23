@@ -23,6 +23,8 @@ import ProfessionalProfile from '../pages/professionals/professionalprofile.js'
 import CustomerDashboard from '../pages/customers/customerdashboard.js'
 import CustomerServices from '../pages/customers/customerservices.js'
 import CustomerProfile from '../pages/customers/customerprofile.js'
+import CustomerFeedback from '../pages/customers/customerfeedback.js'
+
 
 
 
@@ -49,6 +51,7 @@ const routes = [
   { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'customer' } },
   { path: '/customer/services/:id', component: CustomerServices, meta: { requiresLogin: true, role: 'customer' } },
   { path: '/customer/profile', component: CustomerProfile, meta: { requiresLogin: true, role: 'customer' } },
+  { path: '/customer/feedback/:id', component: CustomerFeedback, meta: { requiresLogin: true, role: 'customer' } },
 
 ]
 

@@ -6,7 +6,7 @@ const CustomerServices = {
         <CustomerNavbar/>
     </div>
     <div class="row justify-content-center p-5">
-           <div class="col shadow-lg border p-3">
+           <div class="col shadow-lg border p-3 rounded-5">
                 <h4 class="text-center">Best Services in {{service.name}}</h4>
                 <span v-if="errorMessage">{{erroMessage}}</span>
                 <table class="table responsive">
@@ -40,7 +40,7 @@ const CustomerServices = {
             </div>
     </div>
     <div class="row justify-content-center p-5">
-           <div class="col shadow-lg border p-3">
+           <div class="col shadow-lg border p-3 rounded-5">
                 <h4>Service History</h4>
                 <table class="table responsive">
                     <thead>
@@ -58,7 +58,8 @@ const CustomerServices = {
                         <td>{{ servicerequest.professional_contact }}</td>
                         <td>
                             <span v-if="servicerequest.status==='Requested'" class="badge text-bg-primary">{{servicerequest.status}}</span>
-                            <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-success">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-warning">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Accepted'" class="badge text-bg-success">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Closed'" class="badge text-bg-danger">{{servicerequest.status}}</span>
                         </td>
                         <td>

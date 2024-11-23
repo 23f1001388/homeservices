@@ -1,5 +1,5 @@
 import AdminNavbar from "../../components/adminnavbar.js";
-import ServiceSearch from "../../components/servicesearch.js";
+import Search from "../../components/search.js";
 
 const AdminSearch = {
     template: `
@@ -7,8 +7,8 @@ const AdminSearch = {
         <AdminNavbar/>
     </div>
 
-   <div class="row justify-content-center ps-5 pe-5" >
-           <div class="col shadow-lg border p-3">
+   <div class="row justify-content-center p-5" >
+           <div class="col shadow-lg border p-3 rounded-5">
                 <div class="row">
                     <div class="col-6">
                         <h4 class="text-center">Search</h4>
@@ -36,17 +36,17 @@ const AdminSearch = {
     </div>
     
     <div v-if="!errorMessage">
-        <ServiceSearch :services="allServices" :professionals="professionals" :customers="customers" />
+        <Search :services="allServices" :professionals="professionals" :customers="customers" :servicerequests="servicerequests"/>
     </div>
     <div v-else class="row justify-content-center p-5">
-        <div class="col shadow-lg border p-3">
+        <div class="col shadow-lg border p-3 rounded-5">
             <div class="alert alert-danger fs-6" v-show="errorMessage">{{errorMessage}}</div>
         </div>
     </div>
     `,
     components:{
         AdminNavbar,
-        ServiceSearch,
+        Search,
     },
     data() {
         return {
@@ -152,9 +152,10 @@ const AdminSearch = {
                     if(data.length>0){
                         this.allServices = data;
                         this.errorMessage='';
-                    }
-                    this.errorMessage="No Data Found";
-                    
+                    }else{
+                        this.allServices=[];
+                        this.errorMessage="No Data Found";
+                    };
                 }
                 else {
                     const error = await result.json();
@@ -234,7 +235,6 @@ const AdminSearch = {
             }
         },
         async getServiceRequests() {
-            // const url = window.location.origin;
             const url = `${window.location.origin}/search/servicerequests`;
             const params = new URLSearchParams();  
             params.append('subType', this.subType); 
