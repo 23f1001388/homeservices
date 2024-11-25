@@ -5,78 +5,143 @@ const CustomerProfile={
     <div>
         <CustomerNavbar/> 
       </div>
-    <div class="row justify-content-center p-5">
-    <div class="col-md-6 shadow-lg border p-2">
-    <div class="p-3">
-   
-      <h4 class="text-center">Customer Profile Updation</h4>
-       <div class="alert alert-danger fs-6" v-show="errormessage">{{errormessage}}</div>
-       <div class="form-floating mb-3 mt-3">
-          <input type="email" v-model="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
-          <label for="email">Email address</label>
-        </div>
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-4 shadow-lg p-3 rounded-5">
+                        <img src="/static/images/profile.png" class="img-fluid" alt="Responsive image">
+                        <p><h5 class="text-center"><strong>Welcome : {{current_user.email }}</strong></h5></p>
+                        <p><strong>Name:</strong> {{customerName}}</p>
+                        <p><strong>Address:</strong> {{address}}</p>
+                        <p><strong>Pincode:</strong> {{pincode}}</p>
+                        <p><strong>Contact: </strong>{{contact}}</p>
 
-        <div class="form-floating">
-          <input type="password" v-model="password" class="form-control" id="password" name="password" placeholder="Password" required>
-          <label for="password">Password</label>
-        </div>
-        
-        <div class="form-floating mt-3">
-          <input type="text" v-model="name" class="form-control" id="name" name="name" placeholder="Full Name" required>
-          <label for="name">Full Name</label>
-        </div>
-        
-        <div class="form-floating mt-3">
-          <textarea class="form-control" v-model="address" id="address" name="address" placeholder="Complete Address" required></textarea>
-          <label for="address">Complete Address</label>
-        </div>
-        
-        <div class="form-floating mt-3">
-          <input type="number" v-model="pincode" class="form-control" id="pincode" name="pincode" placeholder="PIN Code" required>
-          <label for="pincode">PIN Code</label>
-        </div>
+            </div>
 
-        <div class="form-floating mt-3">
-          <input type="text" v-model="contact" class="form-control" id="contact" name="contact" placeholder="Contact" required>
-          <label for="contact">Contact</label>
-        </div>
-        
-        <div class="text-center mt-3">
-          <button class="btn btn-primary" @click="registerCustomer">Sign Up</button>
-        </div>
-        <div class='text-center'>
-          <h6>Already have an account ? <router-link to='/Login'>Login</router-link></h6>
-        </div>
-       </div>
-    </div>
-    </div>
+            <div class="col-md-7 shadow-lg p-5 rounded-5 ms-3">   
+                <div class="alert alert-danger fs-6" v-if="errorMessage">{{errorMessage}}</div>
+                        <h2>Profile : {{current_user.email }}</h2>
+                            <hr>
+                        <div class="form-floating mb-3 mt-3">
+                            <input type="text" v-model="userId" class="form-control" id="userId" placeholder="Enter User ID" name="userid" value="{{session['user_id']}}" disabled>
+                            <label for="userId">User ID</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" v-model="password" class="form-control" id="password" placeholder="Enter Password" name="password" required>
+                            <label for="password">Password</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" v-model="newpassword" class="form-control" id="newpassword" placeholder="Enter New Password" name="newpassword" required>
+                            <label for="newpassword">New Password</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" v-model="confirmpassword" class="form-control" id="confirmpassword" placeholder="Enter Password again" name="confirmpassword" required>
+                            <label for="confirmpassword">Confirm Password</label>
+                        </div>
+                        <div class="form-floating mt-3">
+                          <input type="text" v-model="customerName" class="form-control" id="name" name="name" placeholder="Full Name" required>
+                          <label for="name">Full Name</label>
+                        </div>
+                        
+                        <div class="form-floating mt-3">
+                          <textarea class="form-control" v-model="address" id="address" name="address" placeholder="Complete Address" required></textarea>
+                          <label for="address">Complete Address</label>
+                        </div>
+                        
+                        <div class="form-floating mt-3">
+                          <input type="number" v-model="pincode" class="form-control" id="pincode" name="pincode" placeholder="PIN Code" required>
+                          <label for="pincode">PIN Code</label>
+                        </div>
+
+                        <div class="form-floating mt-3">
+                          <input type="text" v-model="contact" class="form-control" id="contact" name="contact" placeholder="Contact" required>
+                          <label for="contact">Contact</label>
+                        </div>
+
+                        <div class='text-center mt-3'>
+                            <button type="submit" @click="updateCustomer" class="btn btn-dark mt-3 justify-content-center"> 
+                            <i class="bi bi-floppy"></i> Update</button>
+                            <router-link to="/customer/dashboard" class="btn btn-danger ms-2 mt-3"><i class="bi bi-x-circle"></i> Cancel</router-link>
+                        </div> 
+                    </div>
+                    </div>
+               
+      </div>
+  </div>
   `,
   components:{
     CustomerNavbar,
   },
   data(){
     return{
-      email: "",
-      password: "",
-      name: "",
-      address: "",
-      pincode: "",
-      contact: "",
-      errormessage:"",
+      userId:'',
+      customerId:'',
+      customerName:'',
+      password:'',
+      newpassword:'',
+      confirmpassword:'',
+      address: '',
+      pincode: '',
+      contact: '',
+      errormessage:'',
     }
   },
+  created(){
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    this.userId=user.id;
+    this.customerId = user.user_id;
+  },
+  computed:{
+    current_user(){
+        return this.$store.state.current_user;
+    }
+  },
+  mounted() {
+    this.getCustomer();
+  },
   methods:{
-    async registerCustomer() {
+    async getCustomer() {
+      const url = window.location.origin;
+      try {
+          const result = await fetch(`${url}/getcustomer/${this.customerId}`, {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+              credentials: 'same-origin',
+          });
+          if (result.ok) {
+              const data = await result.json();
+              console.log(data);
+              this.customerName=data.name;
+              this.address=data.address;
+              this.pincode=data.pincode;
+              this.contact=data.contact;
+          }
+          else {
+              const error = await result.json();
+              console.log(error);
+          }
+      } catch (e) {
+          console.log(e);
+      }
+    },
+    async updateCustomer() {
       try {
         const url = window.location.origin;
-        const result = await fetch(url + '/register/customer',
+        if (this.newpassword !== this.confirmpassword) {
+          this.errorMessage = "New password and confirm password do not match.";
+          return; 
+        }
+        const response = await fetch(url + '/customer/profile',
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              email: this.email,
+              userId:this.userId,
               password: this.password,
-              name: this.name,
+              newpassword:this.newpassword,
+              confirmpassword:this.confirmpassword,
+              name: this.customerName,
               address: this.address,
               pincode: this.pincode,
               contact: this.contact
@@ -84,13 +149,13 @@ const CustomerProfile={
             credentials: 'same-origin',
           });
 
-        if (result.ok) {
-          const data = await result.json();
+        if (response.ok) {
+          const data = await response.json();
           console.log("Updated Successfully");
           this.errormessage="Update Successfully";
         }
         else {
-          const errorMsg = await result.json();
+          const errorMsg = await response.json();
           console.log("Updation  Failed : ", errorMsg);
           this.errormessage="Updation  Failed";
         }

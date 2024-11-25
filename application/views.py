@@ -239,6 +239,26 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
       customers.append(userdata)
     return customers,200
 
+  @app.route('/admin/profile', methods=['POST'])
+  def adminProfile_Update():
+    data=request.get_json()
+    userId = data.get("userId")
+    password = data.get("password")
+    newpassword = data.get("newpassword")
+    confirmpassword = data.get("confirmpassword")
+
+    user=user_datastore.find_user(id=userId)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+    
+    if verify_password(password,user.password) and newpassword==confirmpassword:
+      user.password = hash_password(newpassword)  
+      db.session.commit()
+    else:
+      return jsonify({"message": "Password Not Matched"}), 404
+    return jsonify({"message": "User Updated successfully"}), 200
+  
   @app.route('/admin/approveprofessional/<int:id>', methods=['PUT'])
   def approve_professional(id):
     professional = Professional.query.get(id)
@@ -513,7 +533,39 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
     return jsonify({"message": "Service Request Updated successfully"}), 200
 
 #***************************Professional Functions Start********************
+  @app.route('/customer/profile',methods=['POST'])
+  def updateCustomer():
+    data=request.get_json()
+    userId=data.get('userId')
+    password=data.get('password')
+    newpassword=data.get('newpassword')
+    confirmpassword=data.get('confirmpassword')
+    name=data.get('name')
+    address=data.get('address')
+    pincode=data.get('pincode')
+    contact=data.get('contact')
+    active=True
+    
+    user=User.query.get(userId)
+    if user:
+      if newpassword==confirmpassword:
+        try:
+          customerId=user.user_id
+          customer=Customer.query.get(customerId)
+          user.password=hash_password(newpassword)
+          db.session.commit()
 
+          customer.name=name
+          customer.address=address
+          customer.pincode=pincode
+          customer.contact=contact
+          db.session.commit()
+          return jsonify({"message":"Customer Updated Successfully"}),200
+        except Exception as e:
+          db.session.rollback()
+          return jsonify({"message":{e}}),404
+      else:
+          return jsonify({"message":"New Password and Confirm Passsword donto match"}),404
 
   @app.route('/customer/feedback/', methods=['POST'])
   def servicerequest_feedback():
@@ -532,9 +584,22 @@ def createViews(app,user_datastore:SQLAlchemyUserDatastore):
 
     db.session.commit()
     return jsonify({"message": "Ratings/feedback Updated successfully"}), 200
+  
+
 
 #******************Other Utility Functions Start***********************
+  @app.route('/getprofessional/<int:id>', methods=['GET'])
+  def getprofessional(id):
+    user = Professional.query.get(id)
+    professional = {"id": user.id, "email": user.email,"name": user.name,"experience":user.experience,"services":[service.name for service in user.services],"active":int(user.active)}
+    return jsonify(professional),200
   
+
+  @app.route('/getcustomer/<int:id>', methods=['GET'])
+  def getcustomer(id):
+    obj = Customer.query.get(id)
+    customer = {"id": obj.id, "email": obj.email,"name": obj.name,"address":obj.address,"contact":obj.contact,"pincode":obj.pincode,"active":int(obj.active)}
+    return customer,200
   
   def getProfessionalId(userId):
     user=User.query.get(userId)
