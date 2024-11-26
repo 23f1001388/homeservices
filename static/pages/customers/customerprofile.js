@@ -16,28 +16,15 @@ const CustomerProfile={
                         <p><strong>Pincode:</strong> {{pincode}}</p>
                         <p><strong>Contact: </strong>{{contact}}</p>
 
-            </div>
+                </div>
 
-            <div class="col-md-7 shadow-lg p-5 rounded-5 ms-3">   
-                <div class="alert alert-danger fs-6" v-if="errorMessage">{{errorMessage}}</div>
+                <div class="col-md-7 shadow-lg p-5 rounded-5 ms-3">   
+                  <div class="alert alert-danger fs-6" v-if="errorMessage">{{errorMessage}}</div>
                         <h2>Profile : {{current_user.email }}</h2>
                             <hr>
                         <div class="form-floating mb-3 mt-3">
                             <input type="text" v-model="userId" class="form-control" id="userId" placeholder="Enter User ID" name="userid" value="{{session['user_id']}}" disabled>
                             <label for="userId">User ID</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" v-model="password" class="form-control" id="password" placeholder="Enter Password" name="password" required>
-                            <label for="password">Password</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" v-model="newpassword" class="form-control" id="newpassword" placeholder="Enter New Password" name="newpassword" required>
-                            <label for="newpassword">New Password</label>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <input type="password" v-model="confirmpassword" class="form-control" id="confirmpassword" placeholder="Enter Password again" name="confirmpassword" required>
-                            <label for="confirmpassword">Confirm Password</label>
                         </div>
                         <div class="form-floating mt-3">
                           <input type="text" v-model="customerName" class="form-control" id="name" name="name" placeholder="Full Name" required>
@@ -84,7 +71,7 @@ const CustomerProfile={
       address: '',
       pincode: '',
       contact: '',
-      errormessage:'',
+      errorMessage:'',
     }
   },
   created(){
@@ -128,19 +115,12 @@ const CustomerProfile={
     async updateCustomer() {
       try {
         const url = window.location.origin;
-        if (this.newpassword !== this.confirmpassword) {
-          this.errorMessage = "New password and confirm password do not match.";
-          return; 
-        }
         const response = await fetch(url + '/customer/profile',
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               userId:this.userId,
-              password: this.password,
-              newpassword:this.newpassword,
-              confirmpassword:this.confirmpassword,
               name: this.customerName,
               address: this.address,
               pincode: this.pincode,
@@ -152,17 +132,17 @@ const CustomerProfile={
         if (response.ok) {
           const data = await response.json();
           console.log("Updated Successfully");
-          this.errormessage="Update Successfully";
+          this.errorMessage="Update Successfully";
         }
         else {
           const errorMsg = await response.json();
           console.log("Updation  Failed : ", errorMsg);
-          this.errormessage="Updation  Failed";
+          this.errorMessage="Updation  Failed";
         }
       }
       catch (error) {
         console.log("Fetch error:", error);
-        this.errormessage="Fetch error:", error;
+        this.errorMessage="Fetch error:", error;
       }
     },
   },

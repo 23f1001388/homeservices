@@ -1,3 +1,5 @@
+import router from "../utils/router.js";
+
 const CustomerNavbar={
     template:`<div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light navbar-light">
@@ -18,7 +20,8 @@ const CustomerNavbar={
               <router-link to='/customer/summary' class="nav-link" >Summary</router-link>
             </li>
             <li class="nav-item">
-              <router-link to='/logout' class="nav-link" >Logout</router-link>
+              <button class="nav-link" @click="logout">Logout</button>
+            </li>
             </li>
            
           </ul>
@@ -33,6 +36,7 @@ const CustomerNavbar={
             
             <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg-end dropdown-menu-light">
                   <ul class="list-unstyled">
+                   <li><router-link class="dropdown-item" to="/changepassword"><i class="bi bi-gear"></i> Change Password</router-link></li>
                     <li><router-link class="dropdown-item" to="/customer/profile"><i class="bi bi-person-lines-fill"></i> Profile</router-link></li>
                     <li><button class="dropdown-item" @click="logout"><i class="bi bi-box-arrow-right"></i> Logout</button></li>
                   </ul>
@@ -45,7 +49,7 @@ const CustomerNavbar={
     methods:{
       logout(){
         this.$store.commit('clearUser');
-        sessionStorage.removeItem('user');
+        // sessionStorage.removeItem('user');
         router.push('/');
       },
     },

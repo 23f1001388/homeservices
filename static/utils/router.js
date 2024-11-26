@@ -18,6 +18,7 @@ import AdminProfile from '../pages/admin/adminprofile.js'
 // Professional Components/Pages
 import ProfessionalDashboard from '../pages/professionals/professionaldashboard.js'
 import ProfessionalProfile from '../pages/professionals/professionalprofile.js'
+import ProfessionalSearch from '../pages/professionals/professionalsearch.js'
 
 // Customer Component/Pages
 import CustomerDashboard from '../pages/customers/customerdashboard.js'
@@ -25,9 +26,9 @@ import CustomerServices from '../pages/customers/customerservices.js'
 import CustomerProfile from '../pages/customers/customerprofile.js'
 import CustomerFeedback from '../pages/customers/customerfeedback.js'
 
-
-
-
+//Common Components
+import ChangePassword from '../components/changepassword.js'
+import Summary from '../components/summary.js'
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
@@ -48,12 +49,17 @@ const routes = [
   // Professional Routes
   { path: '/professional/dashboard', component: ProfessionalDashboard, meta: { requiresLogin: true, role: 'professional' } },
   { path: '/professional/profile', component: ProfessionalProfile, meta: { requiresLogin: true, role: 'professional' } },
-
+  { path: '/professional/search', component: ProfessionalSearch, meta: { requiresLogin: true, role: 'professional' } },
+  
   // Customer Routes
   { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'customer' } },
   { path: '/customer/services/:id', component: CustomerServices, meta: { requiresLogin: true, role: 'customer' } },
   { path: '/customer/profile', component: CustomerProfile, meta: { requiresLogin: true, role: 'customer' } },
   { path: '/customer/feedback/:id', component: CustomerFeedback, meta: { requiresLogin: true, role: 'customer' } },
+  
+  //Common Routes
+  { path: '/changepassword', component: ChangePassword, meta: { requiresLogin: true, roles: ['customer', 'admin', 'professional'] } },
+  { path: '/summary', component: Summary, meta: { requiresLogin: true, roles: ['customer', 'admin', 'professional'] } },
 
 ]
 
@@ -82,15 +88,18 @@ router.beforeEach((to, from, next) => {
       if(to.meta.role===role){
         next();
       }else{
-        if (role === 'admin') {
-          next({ path: '/admin/dashboard' });
-        } else if (role === 'professional') {
-          next({ path: '/professional/dashboard' });
-        } else if (role === 'customer') {
-          next({ path: '/customer/dashboard' });
-        } else {
-          // If the role is invalid or doesn't exist, redirect to login page
-          next({ path: '/login' });      
+          if (to.meta.roles && to.meta.roles.includes(role)) {
+            next();  // Role is allowed, proceed to route
+          } else {
+            // Redirect based on user role
+            const roleRedirectMap = {
+              'admin': '/admin/dashboard',
+              'professional': '/professional/dashboard',
+              'customer': '/customer/dashboard',
+            };
+            // Redirect to the appropriate dashboard or login if role is invalid
+            const redirectPath = roleRedirectMap[role] || '/login';
+            next({ path: redirectPath });     
       }
     }
   }

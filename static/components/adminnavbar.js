@@ -23,9 +23,6 @@ const AdminNavbar={
               <router-link to='/admin/summary' class="nav-link" >Summary</router-link>
             </li>
             <li class="nav-item">
-              <router-link to='/admin/profile' class="nav-link" >Profile</router-link>
-            </li>
-            <li class="nav-item">
               <button class="nav-link" @click="logout">Logout</button>
             </li>
           </ul>
@@ -40,7 +37,7 @@ const AdminNavbar={
             
             <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg-end dropdown-menu-light">
                   <ul class="list-unstyled">
-                    <li><router-link class="dropdown-item" to="/admin/profile"><i class="bi bi-person-lines-fill"></i> Profile</router-link></li>
+                   <li><router-link class="dropdown-item" to="/changepassword"><i class="bi bi-gear"></i> Change Password</router-link></li>
                     <li><button class="dropdown-item" @click="sendEmail"><i class="bi bi-envelope-arrow-up"></i> Send Mail</button></li>
                     <li><button class="dropdown-item" @click="logout"><i class="bi bi-box-arrow-right"></i> Logout</button></li>
                    
