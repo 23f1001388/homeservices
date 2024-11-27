@@ -1,4 +1,4 @@
-import AdminNavbar from "../../components/adminnavbar.js";
+import AdminNavbar from "../components/adminnavbar.js";
 import ProfessionalNavbar from "../components/professionalnavbar.js";
 import CustomerNavbar from "../components/customernavbar.js";
 
@@ -14,9 +14,9 @@ const Summary = {
             <CustomerNavbar/>
         </div>
 
-        <div class="row row-cols-2 justtify-content-center p-5" >
+        <div class="row justify-content-center p-5" >
 
-            <div class="col-6 shadow-lg border p-3" id="ratings">
+            <div class="col-md-5 shadow-lg border rounded-5 p-3" id="requests">
                 <div class="card h-100">
                     <div class="card-header">
                         <h3 class="text-center">Service Request Summary Chart</h3>
@@ -26,7 +26,8 @@ const Summary = {
                     </div>
                 </div>
             </div> 
-            <div class="col-6 shadow-lg border p-3" id="requests">
+            
+            <div v-if="role=='admin' || role=='professional'" class="col-md-5 shadow-lg border p-3 rounded-5 ms-3 " id="ratings">
                 <div class="card h-100">
                     <div class="card-header">
                         <h3 class="text-center">Overall Customer Ratings Chart</h3>
@@ -46,6 +47,7 @@ const Summary = {
     },
     data(){
         return{
+            userId:'',
             requestsData:[],
             ratingsData:[],
             errorMessage:'',
@@ -54,7 +56,9 @@ const Summary = {
     },
     created() {
         const user = JSON.parse(sessionStorage.getItem('user'));
+        this.userId=user.id;
         this.role = user.role;
+      
     },
     methods:{
       async loadRequestsChart(){
@@ -72,6 +76,8 @@ const Summary = {
           console.log(errorMsg);
         }
       },
+
+      
       prapareRequestsChart(){
         const requestsChart = this.$refs.requestsChart;
         const labels=this.requestsData.map(item=>item.status);
@@ -84,7 +90,8 @@ const Summary = {
             datasets: [{
               label: "Requests Data",
               data: values,
-              barThickness: 50,
+              barpercentage:0.5,
+              barThickness: 35,
               borderWidth: 1,
               backgroundColor: [
                 'rgba(255, 99, 132, 0.7)',
@@ -107,7 +114,7 @@ const Summary = {
 
       async loadRatingsChart(){
         const url=window.location.origin;
-        const result=await fetch(url + '/summary/ratingsdata');
+        const result=await fetch(url + '/summary/ratingschartdata');
         if(result.ok){
           const data=await result.json();
           this.ratingsData=data;
@@ -120,30 +127,34 @@ const Summary = {
           console.log(errorMsg);
         }
       },
+      
       prapareRatingsChart(){
         const ratingsChart = this.$refs.ratingsChart;
-        const labels=this.ratingsData.map(item=>item.status);
+        const labels=this.ratingsData.map(item=>item.ratings);
         const values=this.ratingsData.map(item=>item.count);
         
-        new Chart(requestsChart, {
-          type: "bar", // You can change the chart type here
+        new Chart(ratingsChart, {
+          type: "doughnut", // You can change the chart type here
           data: {
             labels: labels,
             datasets: [{
-              label: "Requests Data",
+              label: "Ratings Data",
               data: values,
               barThickness: 50,
               borderWidth: 1,
               backgroundColor: [
-                'rgba(255, 99, 132, 0.7)',
-                'rgba(75, 192, 192, 0.7)',
                 'rgba(255, 205, 86, 0.7)',
                 'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
                 'rgba(153, 102, 255, 0.7)'
               ]
             }],
           },
           options: {
+            radius:'90%',
+            aspectRatio:1.7,
+            responsive:true,
             scales: {
               y: {
                 beginAtZero: true
@@ -155,30 +166,8 @@ const Summary = {
     },
     mounted() {
         this.loadRequestsChart();
-        const ratingsChart = this.$refs.ratingsChart;
-    
-       
-        new Chart(ratingsChart, {
-          type: "line", // You can change the chart type here
-          data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-            datasets: [{
-              label: "Campaign Progress",
-              data: this.campaignData,
-              backgroundColor: "rgba(255, 99, 132, 0.2)",
-              borderColor: "rgba(255, 99, 132, 1)",
-              borderWidth: 1
-            }]
-          },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
-          }
-        });
-      }
+        this.loadRatingsChart();
+      },
 }
 
 export default Summary

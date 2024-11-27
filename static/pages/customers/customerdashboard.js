@@ -5,9 +5,9 @@ const CustomerDashboard = {
     <div>
         <CustomerNavbar/>
     </div>
-    <div class="row justify-content-center p-5">
-            <h4 class="text-center">Looking For ?</h4>
-            <div v-for="service in serviceProfessionals" :key="service.id" class="cols-4 shadow-lg border p-3 rounded-5 m-2 d-flex flex-column justify-content-between">
+    <h4 class="text-center">Looking For ?</h4>
+    <div class="row row-cols-3 justify-content-center">
+            <div v-for="service in serviceProfessionals" :key="service.id" class="col shadow-lg border p-3 rounded-5 m-2 d-flex flex-column justify-content-between">
                 <h5 class="text-center">{{ service.service_name }}</h5>
                 <p class="text-center"><strong>Service Price:</strong> Rs. {{ service.service_price }}</p>
                 <p class="text-center"><strong>Time Required:</strong> {{ service.service_timerequired }}  Hours</p>
@@ -36,7 +36,7 @@ const CustomerDashboard = {
                         <td>{{servicerequest.professional_name}}</td>
                         <td>{{ servicerequest.professional_contact }}</td>
                         <td>
-                            <span v-if="servicerequest.status==='Requested'" class="badge text-bg-primary">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Requested'" class="badge text-bg-warning">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-warning">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Accepted'" class="badge text-bg-success">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Closed'" class="badge text-bg-danger">{{servicerequest.status}}</span>

@@ -10,6 +10,11 @@ from flask_cors import CORS
 from api.serviceresource import api
 from flask_mail import Message,Mail
 from application.mailing import *
+from flask_caching import Cache
+from celeryApp.workers import celery_init_app
+from celeryApp.tasks import daily_reminder
+import flask_excel as excel
+from celery.schedules import crontab
 
 
 def createApp():
@@ -19,7 +24,8 @@ def createApp():
     # app.config['WTF_CSRF_CHECK_DEFAULT'] =False
     # app.config['SECURITY_CSRF_PROTECT_MECHANISM'] = []
     # app.config['SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS'] = True
-    
+    cache=Cache()
+    cache.init_app(app)
     db.init_app(app)
 
     with app.app_context():
@@ -35,6 +41,8 @@ def createApp():
 
 app=createApp()
 # mail=Mail(app)
+calary_app=celery_init_app(app)
+excel.init_excel(app)
 
 
 if __name__ == '__main__':

@@ -35,7 +35,8 @@ const CustomerFeedback = {
                 </div>
                     <textarea class="form-control" v-model="feedback" placeholder="Feedback in 100 words"></textarea>
                 <div class="text-center mt-3">
-                    <button class="btn btn-primary" @click="submitFeedback">Submit</button>
+                    <button class="btn btn-dark" @click="submitFeedback"><i class="bi bi-upload"></i> Submit</button>
+                    <router-link to="/customer/dashboard" class="btn btn-danger ms-2"><i class="bi bi-x-circle"></i> Cancel</router-link>
                 </div>
         </div>
     </div>

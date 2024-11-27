@@ -36,8 +36,8 @@ const ProfessionalDashboard = {
                             <span v-if="servicerequest.status==='Rejected'" class="badge text-bg-danger">{{servicerequest.status}}</span>
                         </td>
                         <td>
-                            <button v-if="servicerequest.status==='Assigned'" class="btn btn-success rounded-3 ms-3 btn-sm" @click="approveServiceRequest(servicerequest.id)"><i class="bi bi-check-circle"></i> Approve </button>
-                            <button v-if="servicerequest.status==='Assigned'" class="btn btn-danger rounded-3 ms-3 btn-sm" @click="rejectServiceRequest(servicerequest.id)"><i class="bi bi-x-circle"></i> Reject</button>
+                            <button v-if="servicerequest.status==='Requested'" class="btn btn-success rounded-3 ms-3 btn-sm" @click="approveServiceRequest(servicerequest.id)"><i class="bi bi-check-circle"></i> Approve </button>
+                            <button v-if="servicerequest.status==='Requested'" class="btn btn-danger rounded-3 ms-3 btn-sm" @click="rejectServiceRequest(servicerequest.id)"><i class="bi bi-x-circle"></i> Reject</button>
                         </td>
                     </tr>
                     </tbody>

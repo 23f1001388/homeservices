@@ -1,5 +1,49 @@
+import AdminNavbar from "../components/adminnavbar.js";
+import ProfessionalNavbar from "../components/professionalnavbar.js";
+import CustomerNavbar from "../components/customernavbar.js";
+
+
 const Search={
     template:`
+    <div v-if="role=='admin'">
+        <AdminNavbar/>
+    </div>
+    <div v-if="role=='professional'">
+        <ProfessionalNavbar/>
+    </div>
+    <div v-if="role=='customer'">
+        <CustomerNavbar/>
+    </div>
+
+    <div class="row justify-content-center p-5" >
+           <div class="col shadow-lg border p-3 rounded-5">
+                <div class="row">
+                    <div class="col-6">
+                        <h4 class="text-center">Search</h4>
+                    </div>
+                    <div class="col-6">
+                        <div class="input-group">
+                            <select v-model="searchType" @change="getSelected" class="form-select">
+                                <option value="Select Search Type">Select Search Type</option>
+                                <option 
+    v-if="role=='admin' || role=='customer'" value="Professional">Professional</option>
+                                <option v-if="role=='admin' || role=='professional'"  value="Customer">Customer</option>
+                                <option value="Service">Service</option>
+                                <option value="ServiceRequest">Service Request</option>
+                            </select>
+
+                            <select v-model="subType" class="form-select">
+                                <option value="Select Subtype">Select Subtype</option>
+                                <option v-for="(label, value) in subTypes" :key="value" :value="value">{{ label }}</option>
+                            </select>
+                             <input v-model="searchText"  class="form-control" name="searchText" id="searchText" type="text" placeholder="Type to Search" aria-label="Search" required />
+                            <button @click="getSearched" class="btn btn-primary" ><i class="bi bi-search"></i> Search</button>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+    </div>
+    
     <div class="row justify-content-center p-5" v-if="services.length>0">
            <div class="col shadow-lg border p-3 rounded-5"> 
                 <h4>Services  Search Result</h4>
@@ -62,7 +106,7 @@ const Search={
     </div>
     <div class="row justify-content-center p-5" v-if="customers.length>0">
            <div class="col shadow-lg border p-3 border rounded-5">
-                <h4>Customers  Search Result</h4>
+                <h4>Customers Search Result</h4>
                 <table class="table responsive">
                     <thead>
                         <th>Id</th>
@@ -102,6 +146,7 @@ const Search={
                         <th>Service Name</th>
                         <th>Professional Name</th>
                         <th>Phone No</th>
+                        <th>Request Date</th>                        
                         <th>Status</th>
                         <th>Action</th>
                     </thead>
@@ -111,6 +156,7 @@ const Search={
                         <td>{{servicerequest.service_name}}</td>
                         <td>{{servicerequest.professional_name}}</td>
                         <td>{{ servicerequest.professional_contact }}</td>
+                        <td>{{ servicerequest.requestdate }}</td>
                         <td>
                             <span v-if="servicerequest.status==='Requested'" class="badge text-bg-primary">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-warning">{{servicerequest.status}}</span>
@@ -132,41 +178,240 @@ const Search={
         return{
             errormessage:'',
             role:'',
+            searchType: "Select Search Type",
+            subType: "Select Subtype",
+            searchText:'',
+            allServices: [],
+            services:[],
+            professionals:[],
+            customers:[],
+            servicerequests:[],
+            errorMessage:'',
+            subTypes: {},
+            professionalSearch: {
+                "By Name": "By Name",
+                "By Description": "By Description",
+                "By Address": "By Address",
+                "By Pincode": "By Pincode",
+                "By Contact":"By Contact",
+                "By Experience":"By Experience",
+                "By Status":"By Status"
+            },
+            customerSearch: {
+                "By Name": "By Name",
+                "By Address": "By Address",
+                "By Pincode": "By Pincode",
+                "By Contact":"By Contact",
+                "By Status":"By Status"
+            },
+            serviceSearch: {
+                "By Name": "By Name",
+                "By Description": "By Description",
+                "By Price": "By Price",
+                "By Status": "By Status",
+            },
+            serviceRequestSearch: {
+                "By Service": "By Service",
+                "By Professional": "By Professional",
+                "By Customer": "By Customer",
+                "By Request Date": "By Request Date",    
+                "By Ratings": "By Ratings",
+                "By Status": "By Status",
+            },
         }
+    },
+    components:{
+        AdminNavbar,
+        ProfessionalNavbar,
+        CustomerNavbar,
     },
     created() {
         const user = JSON.parse(sessionStorage.getItem('user'));
         this.role = user.role;
     },
-    props: {
-        services: {
-            type: Array,  
-            required: true,  
-            default: () => []  
+    methods:{
+      getSearched(){
+              console.log("Searching: "+ this.searchType)
+              console.log("SubType: "+ this.subType)
+              console.log("Search Text: "+ this.searchText)
+
+              if(this.searchType == "Professional"){
+                   this.getProfessionals();
+              }
+              if(this.searchType == "Customer"){
+                  this.getCustomers();
+              }
+              if(this.searchType == "Service"){
+                  this.getServices();
+              }
+              if(this.searchType == "ServiceRequest"){
+                  this.getServiceRequests();
+              }
           },
-          professionals: {
-            type: Array,  
-            required: true,  
-            default: () => []  
+          getSelected(){
+              this.services=[];
+              this.professionals=[];
+              this.customers=[];
+              this.servicerequests=[];
+
+              switch (this.searchType) {
+                  case 'Professional':
+                    this.subTypes = this.professionalSearch;
+                    break;
+                  case 'Customer':
+                    this.subTypes = this.customerSearch;
+                    break;
+                  case 'Service':
+                    this.subTypes = this.serviceSearch;
+                    break;
+                  case 'ServiceRequest':
+                    this.subTypes = this.serviceRequestSearch;
+                    break;
+                  default:
+                    this.subTypes = {};
+                    break;
+                }
+                // Reset the selected subtype when search type changes
+                this.selectedSubType = "Select Subtype";   
+         },
+          async getServices() {
+              // const url = window.location.origin;
+              const url = `${window.location.origin}/api/serviceapi`;
+              const params = new URLSearchParams();  
+              params.append('subType', this.subType); 
+              params.append('searchText', this.searchText);
+              try {
+                  const result = await fetch(`${url}?${params.toString()}`, {
+                      method: "GET",
+                      headers: { "Content-Type": "application/json" },
+                      credentials: 'same-origin',
+                  });
+                  if (result.ok) {
+                      const data = await result.json();
+                      console.log(data);
+                      if(data.length>0){
+                          this.services = data;
+                          this.errorMessage='';
+                      }else{
+                          this.allServices=[];
+                          this.errorMessage="No Data Found";
+                      };
+                  }
+                  else {
+                      const error = await result.json();
+                      console.log(error);
+                  }
+              } catch (e) {
+                  console.log(e);
+              }
           },
-          customers: {
-            type: Array, 
-            required: true, 
-            default: () => []  
+          async getProfessionals() {
+              // const url = window.location.origin;
+              const url = `${window.location.origin}/search/professionals`;
+              const params = new URLSearchParams();  
+              params.append('subType', this.subType); 
+              params.append('searchText', this.searchText);
+              console.log(this.subType,this.searchText)
+              try {
+                  const result = await fetch(`${url}?${params.toString()}`, {
+                      method: "GET",
+                      headers: { "Content-Type": "application/json" },
+                      credentials: 'same-origin',
+                  });
+                  if (result.ok) {
+                      const data = await result.json();
+                      console.log(data);
+                      if(data.length>0){
+                          this.professionals = data;
+                          this.errorMessage='';
+                      }
+                      else {
+                          this.professionals = [];  
+                          this.errorMessage = 'No Data Found'; 
+                      }
+
+                  }
+                  else {
+                      const error = await result.json();
+                      this.errorMessage=error.message;
+                      console.log(error);
+                  }
+              } catch (e) {
+                  console.log(e);
+              }
           },
-          servicerequests: {
-            type: Array, 
-            required: true, 
-            default: () => []  
+          async getCustomers() {
+              // const url = window.location.origin;
+              const url = `${window.location.origin}/search/customers`;
+              const params = new URLSearchParams();  
+              params.append('subType', this.subType); 
+              params.append('searchText', this.searchText);
+              console.log(this.subType,this.searchText);
+              try {
+                  const result = await fetch(`${url}?${params.toString()}`, {
+                      method: "GET",
+                      headers: { "Content-Type": "application/json" },
+                      credentials: 'same-origin',
+                  });
+                  if (result.ok) {
+                      const data = await result.json();
+                      console.log(data);
+                      if(data.length>0){
+                          this.customers = data;
+                          this.errorMessage='';
+                      }else{
+                          this.customers=[];
+                          this.errorMessage="No Data Found";
+                      }
+
+                  }
+                  else {
+                      const error = await result.json();
+                      this.errorMessage=error.message;
+                      console.log(error);
+                  }
+              } catch (e) {
+                  console.log(e);
+              }
+          },
+          async getServiceRequests() {
+              const url = `${window.location.origin}/search/servicerequests`;
+              const params = new URLSearchParams();  
+              params.append('subType', this.subType); 
+              params.append('searchText', this.searchText);
+              console.log(this.subType,this,searchText)
+              try {
+                  const result = await fetch(`${url}?${params.toString()}`, {
+                      method: "GET",
+                      headers: { "Content-Type": "application/json" },
+                      credentials: 'same-origin',
+                  });
+                  if (result.ok) {
+                      const data = await result.json();
+                      console.log(data);
+                      if(data.length>0){
+                          this.servicerequests = data;
+                          this.errorMessage='';
+                      }else{
+                          this.servicerequests=[];
+                          this.errorMessage="No Data Found";
+                      }
+
+
+                  }
+                  else {
+                      const error = await result.json();
+                      this.errorMessage=error.message;
+                      console.log(error);
+                  }
+              } catch (e) {
+                  this.errorMessage=error.message;
+                  console.log(e);
+              }
           },
 
-      },
-      watch: {
-        services(newServices) {
-          console.log('Updated services:', newServices);
-        }
-      },
-      methods:{
+
+          
         async approveProfessional(id){
             const url = window.location.origin;
             try {

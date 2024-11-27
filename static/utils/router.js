@@ -29,6 +29,7 @@ import CustomerFeedback from '../pages/customers/customerfeedback.js'
 //Common Components
 import ChangePassword from '../components/changepassword.js'
 import Summary from '../components/summary.js'
+import Search from '../components/search.js'
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
@@ -42,14 +43,11 @@ const routes = [
   { path: '/admin/service/create', component: ServiceCreate, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/service/edit/:id', component: ServiceEdit, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/users', component: UserDetails, meta: { requiresLogin: true, role: 'admin' } },
-  { path: '/admin/search', component: AdminSearch, meta: { requiresLogin: true, role: 'admin' } },
-  { path: '/admin/summary', component: AdminSummary, meta: { requiresLogin: true, role: 'admin' } },
   { path: '/admin/profile', component: AdminProfile, meta: { requiresLogin: true, role: 'admin' } },
 
   // Professional Routes
   { path: '/professional/dashboard', component: ProfessionalDashboard, meta: { requiresLogin: true, role: 'professional' } },
   { path: '/professional/profile', component: ProfessionalProfile, meta: { requiresLogin: true, role: 'professional' } },
-  { path: '/professional/search', component: ProfessionalSearch, meta: { requiresLogin: true, role: 'professional' } },
   
   // Customer Routes
   { path: '/customer/dashboard', component: CustomerDashboard, meta: { requiresLogin: true, role: 'customer' } },
@@ -59,6 +57,7 @@ const routes = [
   
   //Common Routes
   { path: '/changepassword', component: ChangePassword, meta: { requiresLogin: true, roles: ['customer', 'admin', 'professional'] } },
+  { path: '/search', component: Search, meta: { requiresLogin: true, roles: ['customer', 'admin', 'professional'] } },
   { path: '/summary', component: Summary, meta: { requiresLogin: true, roles: ['customer', 'admin', 'professional'] } },
 
 ]

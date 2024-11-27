@@ -4,7 +4,7 @@ const ProfessionalNavbar={
     template:`<div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light navbar-light">
       <div class="container-fluid">
-        <router-link class="navbar-brand fs-3" to="/professional/dashboard"><i class="bi bi-speedometer2"></i> DashBoard</router-link>
+        <router-link class="navbar-brand fs-3" to="/professional/dashboard"><strong><i class="bi bi-speedometer2"></i> Dashboard</strong></router-link>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -14,7 +14,7 @@ const ProfessionalNavbar={
               <router-link to='/professional/dashboard' class="nav-link active" aria-current="page">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link to='/professional/search' class="nav-link">Search</router-link>
+              <router-link to='/search' class="nav-link">Search</router-link>
             </li>
             <li class="nav-item">
               <router-link to='/summary' class="nav-link" >Summary</router-link>

@@ -10,7 +10,7 @@ import mimetypes, os
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from application.search import searchProfessionals, searchCustomers, searchServices, searchServiceRequests
-from application.summary import serviceRequestsData
+from application.summary import serviceRequestsData,customersRatingsData
 from application.common import format_date, format_datetime
 # from app import app
 
@@ -561,6 +561,13 @@ def createViews(app, user_datastore: SQLAlchemyUserDatastore):
     if requestsData is None:
       return jsonify({"message": "No Data Found"}), 404
     print("Printed from View Route: ", requestsData)
+    return requestsData, 200
+  
+  @app.route('/summary/ratingschartdata', methods=['GET'])
+  def summary_ratingsData():
+    requestsData = customersRatingsData()
+    if requestsData is None:
+      return jsonify({"message": "No Data Found"}), 404
     return requestsData, 200
 
 #***************************Sumamry Functions End********************

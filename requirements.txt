@@ -10,3 +10,4 @@ requests
 python-dotenv
 flask_cors
 flask-Mail
+flask_excel

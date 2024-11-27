@@ -28,6 +28,11 @@ class LocalDevelopmentConfig(Config):
   CELERY_BROKER_URL='redis://localhost:6379/0'
   CELERY_RESULT_BACKEND='reids://localhost:6379/1'
 
+  #Caching Configuration
+  CACHE_DEFAULT_TIMEOUT= 300
+  CACHE_TYPE = "RedisCache"
+  CACHE_REDIS_PORT = 6379
+
   # Mail Configuration
   MAIL_SERVER= 'smtp.gmail.com'          # Your mail server, e.g., smtp.gmail.com
   MAIL_PORT = 587                           # Port for TLS

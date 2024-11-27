@@ -1,6 +1,7 @@
 from application.models import Service, Professional, Customer, ServiceRequest
 from enum import Enum
-from application.common import format_date,format_datetime
+from application.common import format_date,format_datetime,getDate
+from sqlalchemy import func
 
 class SearchType(Enum):
     BY_NAME = "By Name"
@@ -14,11 +15,10 @@ class SearchType(Enum):
     BY_TIMEREQUIRED="By TimeRequired"
     BY_RATINGS="By Ratings"
     BY_REMARKS="By Remarks"
-    BY_REQUESTDATE="By RequestDate"
-
-    BY_SERVICEID="By Service"
-    BY_PROFESSIONALID="By Professional"
-    BY_CUSTOMERID="By Customer"
+    BY_REQUESTDATE = "By Request Date"
+    BY_SERVICEID = "By Service"
+    BY_PROFESSIONALID = "By Professional"
+    BY_CUSTOMERID = "By Customer"
     
 
 def searchProfessionals(subtype, search):
@@ -105,6 +105,8 @@ def searchServiceRequests(subtype, search):
     objData = ServiceRequest.query.filter(ServiceRequest.customer_id==search).all()
   elif subtype == SearchType.BY_RATINGS:
     objData = ServiceRequest.query.filter(ServiceRequest.ratings==search).all()
+  elif subtype == SearchType.BY_REQUESTDATE:
+    objData = ServiceRequest.query.filter(func.date(ServiceRequest.requestdate) == getDate(search)).all()
   elif subtype == SearchType.BY_REMARKS:
     objData = ServiceRequest.query.filter(ServiceRequest.remarks.like('%' + search + '%')).all()
     

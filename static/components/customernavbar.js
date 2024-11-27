@@ -4,7 +4,7 @@ const CustomerNavbar={
     template:`<div class="container-fluid">
     <nav class="navbar navbar-expand-lg bg-light navbar-light">
       <div class="container-fluid">
-        <router-link class="navbar-brand fs-3" to="/customer/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</router-link>
+        <router-link class="navbar-brand fs-4" to="/customer/dashboard"><strong><i class="bi bi-speedometer2"></i> Dashboard</strong></router-link>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -14,10 +14,10 @@ const CustomerNavbar={
               <router-link to='/customer/dashboard' class="nav-link active" aria-current="page">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link to='/customer/search' class="nav-link">Search</router-link>
+              <router-link to='/search' class="nav-link">Search</router-link>
             </li>
             <li class="nav-item">
-              <router-link to='/customer/summary' class="nav-link" >Summary</router-link>
+              <router-link to='/summary' class="nav-link" >Summary</router-link>
             </li>
             <li class="nav-item">
               <button class="nav-link" @click="logout">Logout</button>
