@@ -7,7 +7,7 @@ const CustomerServices = {
     </div>
     <div class="row justify-content-center p-5">
            <div class="col shadow-lg border p-3 rounded-5">
-                <h4 class="text-center">Best Services in {{service.name}}</h4>
+                <h4 class="text-center">Best Services in <span class="badge text-bg-primary">{{service.name}}</span></h4>
                 <span v-if="errorMessage">{{erroMessage}}</span>
                 <table class="table responsive">
                     <thead>
@@ -48,6 +48,8 @@ const CustomerServices = {
                         <th>Service Name</th>
                         <th>Professional Name</th>
                         <th>Phone No</th>
+                         <th>Ratings</th>
+                        <th>Feedback</th>
                         <th>Status</th>
                     </thead>
                     <tbody>
@@ -56,14 +58,16 @@ const CustomerServices = {
                         <td>{{servicerequest.service_name}}</td>
                         <td>{{servicerequest.professional_name}}</td>
                         <td>{{ servicerequest.professional_contact }}</td>
-                        <td>
+                        <td>{{ servicerequest.ratings }}</td>
+                        <td>{{ servicerequest.remarks }}</td>
+                       <td>
                             <span v-if="servicerequest.status==='Requested'" class="badge text-bg-warning">{{servicerequest.status}}</span>
-                            <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-warning">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Accepted'" class="badge text-bg-success">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Completed'" class="badge text-bg-success">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Closed'" class="badge text-bg-danger">{{servicerequest.status}}</span>
                         </td>
                         <td>
-                            <router-link :to="'/customer/feedback/' + servicerequest.id" class="btn btn-danger rounded-3 ms-3 btn-sm"><i class="bi bi-trash3"></i> Close It ? </router-link>
+                            <router-link v-if="servicerequest.status==='Completed'" :to="'/customer/feedback/' + servicerequest.id" class="btn btn-danger rounded-3 ms-3 btn-sm"><i class="bi bi-trash3"></i> Close It ? </router-link>
                         </td>
                     </tr>
                     </tbody>
@@ -93,6 +97,7 @@ const CustomerServices = {
         this.customerId=user.user_id;
       },
     mounted(){
+        this.getService();
         this.getServicesRequests();
         this.getServiceProfessional();
     },

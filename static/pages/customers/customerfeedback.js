@@ -92,22 +92,23 @@ const CustomerFeedback = {
         },
 
         async submitFeedback(){
-        const url=window.location.origin;
-        const response=await fetch(url+ '/customer/feedback/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ serviceRequestId: this.serviceRequestId, rating: this.rating ,feedback:this.feedback }),
-        });
-        if(response.ok){
-            const data=await response.json();
-            console.log(data.message);
-            errorMessage=data.message;
-        }
-        else{
-            const error=await response.json();
-            console.log(data.message);
-            errorMessage=data.message;
-        }
+            const url=window.location.origin;
+            const response=await fetch(url+ '/customer/feedback/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ serviceRequestId: this.serviceRequestId, rating: this.rating ,feedback:this.feedback }),
+            });
+            if(response.ok){
+                const data=await response.json();
+                console.log(data);
+                errorMessage=data.message;
+            }
+            else{
+                const error=await response.json();
+                console.log(data.message);
+                errorMessage=data.message;
+            }
         },
         hoverRating(value) {
             this.hoverRatingValue = value;

@@ -341,6 +341,26 @@ def createViews(app, user_datastore: SQLAlchemyUserDatastore):
   #***********************Admin Funcitons End**************************
 
   #***********************Service Related Functions********************
+  @app.route('/getServices')
+  def getServices():
+    objectData = []
+    count = 1
+    services=Service.query.all()
+    for service in services:
+      data=ServiceProfessional.query.filter(ServiceProfessional.service_id==service.id).all()
+      if data:
+        obj = {
+            "id": count,
+            "id": service.id,
+            "name": service.name,
+            "price": service.price,
+            "timerequired": service.timerequired,
+            "description":service.description
+        }
+        objectData.append(obj)
+        count += 1        
+    return objectData, 200
+
 
   @app.route('/service/professionals')
   def getServiceProfessionals():
@@ -438,7 +458,7 @@ def createViews(app, user_datastore: SQLAlchemyUserDatastore):
           "completiondate": format_datetime(servicerequest.completiondate),
           "status": servicerequest.status,
           "ratings": servicerequest.ratings,
-          "feedback": servicerequest.remarks,
+          "remarks": servicerequest.remarks,
           "service_id": service.id,
           "service_name": service.name,
           "professional_name": professional.name,
@@ -456,6 +476,64 @@ def createViews(app, user_datastore: SQLAlchemyUserDatastore):
     print(professionalId)
     servicerequests = ServiceRequest.query.filter(
         ServiceRequest.professional_id == professionalId).all()
+    dataObject = []
+    for servicerequest in servicerequests:
+      service = Service.query.filter(
+          Service.id == servicerequest.service_id).first()
+      customerId = servicerequest.customer_id
+      customer = Customer.query.filter(Customer.id == customerId).first()
+      data = {
+          "id": servicerequest.id,
+          "service_id": service.id,
+          "requestdate": format_datetime(servicerequest.requestdate),
+          "completiondate": format_datetime(servicerequest.completiondate),
+          "service_name": service.name,
+          "customer_name": customer.name,
+          "customer_contact": customer.contact,
+          "customer_address": customer.address,
+          "customer_pincode": customer.pincode,
+          "status": servicerequest.status,
+          "rating": servicerequest.ratings,
+          "remarks": servicerequest.remarks
+      }
+      dataObject.append(data)
+    return dataObject, 200
+  
+  @app.route('/servicerequests/active/byprofessionals/<int:professionalId>')
+  def servicerequests_byprofessional_active(professionalId):
+    # professionalId=getProfessionalId(userId)
+    print(professionalId)
+    servicerequests = ServiceRequest.query.filter(
+        ServiceRequest.professional_id == professionalId,ServiceRequest.status!='Closed').all()
+    dataObject = []
+    for servicerequest in servicerequests:
+      service = Service.query.filter(
+          Service.id == servicerequest.service_id).first()
+      customerId = servicerequest.customer_id
+      customer = Customer.query.filter(Customer.id == customerId).first()
+      data = {
+          "id": servicerequest.id,
+          "service_id": service.id,
+          "requestdate": format_datetime(servicerequest.requestdate),
+          "completiondate": format_datetime(servicerequest.completiondate),
+          "service_name": service.name,
+          "customer_name": customer.name,
+          "customer_contact": customer.contact,
+          "customer_address": customer.address,
+          "customer_pincode": customer.pincode,
+          "status": servicerequest.status,
+          "rating": servicerequest.ratings,
+          "remarks": servicerequest.remarks
+      }
+      dataObject.append(data)
+    return dataObject, 200
+
+  @app.route('/servicerequests/closed/byprofessionals/<int:professionalId>')
+  def servicerequests_byprofessional_closed(professionalId):
+    # professionalId=getProfessionalId(userId)
+    print(professionalId)
+    servicerequests = ServiceRequest.query.filter(
+        ServiceRequest.professional_id == professionalId, ServiceRequest.status=='Closed').all()
     dataObject = []
     for servicerequest in servicerequests:
       service = Service.query.filter(
@@ -506,7 +584,10 @@ def createViews(app, user_datastore: SQLAlchemyUserDatastore):
         "customer_name": customer.name,
         "customer_contact": customer.contact,
         "customer_address": customer.address,
-        "customer_pincode": customer.pincode
+        "customer_pincode": customer.pincode,
+        "status": servicerequest.status,
+        "rating": servicerequest.ratings,
+        "remarks": servicerequest.remarks
     }
 
     return jsonify({"serviceRequest": data}), 200
@@ -563,6 +644,22 @@ def createViews(app, user_datastore: SQLAlchemyUserDatastore):
     print("Printed from View Route: ", requestsData)
     return requestsData, 200
   
+  @app.route('/summary/servicerequestsdata/professional/<int:professionalId>', methods=['GET'])
+  def summary_requestData_professionalId(professionalId):
+    requestsData = serviceRequestsData(professionalId)
+    if requestsData is None:
+      return jsonify({"message": "No Data Found"}), 404
+    print("Printed from View Route Professional: ", requestsData)
+    return requestsData, 200
+  
+  @app.route('/summary/servicerequestsdata/customer/<int:customerId>', methods=['GET'])
+  def summary_requestData_customerId(customerId):
+    requestsData = serviceRequestsData(customerId)
+    if requestsData is None:
+      return jsonify({"message": "No Data Found"}), 404
+    print("Printed from View Route: ", requestsData)
+    return requestsData, 200
+  
   @app.route('/summary/ratingschartdata', methods=['GET'])
   def summary_ratingsData():
     requestsData = customersRatingsData()
@@ -589,6 +686,26 @@ def createViews(app, user_datastore: SQLAlchemyUserDatastore):
     if not servicerequest:
       return jsonify({"message": "Service Request not found"}), 404
     servicerequest.status = "Rejected"
+    db.session.commit()
+    return jsonify({"message": "Service Request Updated successfully"}), 200
+  
+  @app.route('/professional/servicerequest/complete/<int:id>', methods=['PUT'])
+  def servicerequest_update(id):
+    servicerequest = ServiceRequest.query.get(id)
+    if not servicerequest:
+      return jsonify({"message": "Service Request not found"}), 404
+    servicerequest.status = "Completed"
+    servicerequest.completiondate=datetime.now()
+    db.session.commit()
+    return jsonify({"message": "Service Request Updated successfully"}), 200
+  
+  @app.route('/professional/servicerequest/open/<int:id>', methods=['PUT'])
+  def servicerequest_open(id):
+    servicerequest = ServiceRequest.query.get(id)
+    if not servicerequest:
+      return jsonify({"message": "Service Request not found"}), 404
+    servicerequest.status = "Accepted"
+    servicerequest.completiondate=' '
     db.session.commit()
     return jsonify({"message": "Service Request Updated successfully"}), 200
 
@@ -654,17 +771,18 @@ def createViews(app, user_datastore: SQLAlchemyUserDatastore):
     serviceRequestId = data.get('serviceRequestId')
     ratings = data.get('rating')
     feedback = data.get('feedback')
-    print("Service request Id:", serviceRequestId)
-    print("Ratings:", ratings)
-    print("Feedback:", feedback)
+   
     servicerequest = ServiceRequest.query.get(serviceRequestId)
     if not servicerequest:
       return jsonify({"message": "Service Request not found"}), 404
-    servicerequest.ratings = ratings
-    servicerequest.remarks = feedback
-
-    db.session.commit()
-    return jsonify({"message": "Ratings/feedback Updated successfully"}), 200
+    if servicerequest.status=="Completed":
+      servicerequest.ratings = ratings
+      servicerequest.remarks = feedback
+      servicerequest.status="Closed"
+      db.session.commit()
+      return jsonify({"message": "Ratings/feedback Updated successfully"}), 200
+    else:
+      return jsonify({"message": "Service Request not Complete Yet"}), 404
 
 
 #******************Other Utility Functions Start***********************

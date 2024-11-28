@@ -8,12 +8,11 @@ const CustomerDashboard = {
     <h4 class="text-center">Looking For ?</h4>
     <div class="row row-cols-3 justify-content-center">
             <div v-for="service in serviceProfessionals" :key="service.id" class="col shadow-lg border p-3 rounded-5 m-2 d-flex flex-column justify-content-between">
-                <h5 class="text-center">{{ service.service_name }}</h5>
-                <p class="text-center"><strong>Service Price:</strong> Rs. {{ service.service_price }}</p>
-                <p class="text-center"><strong>Time Required:</strong> {{ service.service_timerequired }}  Hours</p>
-                <p class="text-center"><strong>Professional Id:</strong> {{ service.professional_id }}</p>
-                <p class="text-center"><strong>Professional Name:</strong> {{ service.professional_name }}</p>                
-                <router-link :to="'/customer/services/' + service.service_id" class="btn btn-dark mx-auto btn-sm"><i class="bi bi-binoculars"></i> Explore</router-link>
+                <h5 class="text-center"><span class="badge text-bg-danger">{{ service.name }}</span></h5>
+                <p class="text-center"><strong>Service Description:</strong>{{ service.description }}</p>
+                <p class="text-center"><strong>Service Price:</strong> Rs. {{ service.price }}</p>
+                <p class="text-center"><strong>Time Required:</strong> {{ service.timerequired }}  Hours</p>           
+                <router-link :to="'/customer/services/' + service.id" class="btn btn-dark mx-auto btn-sm"><i class="bi bi-binoculars"></i> Explore</router-link>
             </div>
     </div>
 
@@ -26,6 +25,8 @@ const CustomerDashboard = {
                         <th>Service Name</th>
                         <th>Professional Name</th>
                         <th>Phone No</th>
+                        <th>Ratings</th>
+                        <th>Feedback</th>
                         <th>Status</th>
                         <th>Action</th>
                     </thead>
@@ -35,14 +36,16 @@ const CustomerDashboard = {
                         <td>{{servicerequest.service_name}}</td>
                         <td>{{servicerequest.professional_name}}</td>
                         <td>{{ servicerequest.professional_contact }}</td>
+                        <td>{{ servicerequest.ratings }}</td>
+                        <td>{{ servicerequest.remarks }}</td>
                         <td>
                             <span v-if="servicerequest.status==='Requested'" class="badge text-bg-warning">{{servicerequest.status}}</span>
-                            <span v-if="servicerequest.status==='Assigned'" class="badge text-bg-warning">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Accepted'" class="badge text-bg-success">{{servicerequest.status}}</span>
+                            <span v-if="servicerequest.status==='Completed'" class="badge text-bg-success">{{servicerequest.status}}</span>
                             <span v-if="servicerequest.status==='Closed'" class="badge text-bg-danger">{{servicerequest.status}}</span>
                         </td>
                         <td>
-                            <router-link :to="'/customer/feedback/' + servicerequest.id" class="btn btn-danger rounded-3 ms-3 btn-sm"><i class="bi bi-trash3"></i> Close It ? </router-link>
+                            <router-link v-if="servicerequest.status==='Completed'" :to="'/customer/feedback/' + servicerequest.id" class="btn btn-danger rounded-3 ms-3 btn-sm"><i class="bi bi-trash3"></i> Close It ? </router-link>
                         </td>
                     </tr>
                     </tbody>
@@ -97,7 +100,7 @@ const CustomerDashboard = {
         async getServicesProfessionals() {
             const url = window.location.origin;
             try {
-                const result = await fetch(url + "/service/professionals", {
+                const result = await fetch(url + "/getServices", {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                     credentials: 'same-origin',

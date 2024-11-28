@@ -48,6 +48,8 @@ const Summary = {
     data(){
         return{
             userId:'',
+            professonalId:'',
+            customerId:'',
             requestsData:[],
             ratingsData:[],
             errorMessage:'',
@@ -57,13 +59,24 @@ const Summary = {
     created() {
         const user = JSON.parse(sessionStorage.getItem('user'));
         this.userId=user.id;
-        this.role = user.role;
-      
+        this.professonalId=user.user_id,
+        this.customerId=user.user_id,
+        this.role = user.role;      
     },
     methods:{
       async loadRequestsChart(){
-        const url=window.location.origin;
-        const result=await fetch(url + '/summary/servicerequestsdata');
+        let url=window.location.origin;
+        if(this.role==='admin'){
+          url=url+`/summary/servicerequestsdata`
+        }
+        if(this.role==='professional'){
+          url=url+`/summary/servicerequestsdata/professional/${this.professonalId}`
+        }
+        if(this.role==='customer'){
+          url=url+`/summary/servicerequestsdata/customer/${this.customerId}`
+        }
+        console.log("URl is: ",url);
+        const result=await fetch(url);
         if(result.ok){
           const data=await result.json();
           this.requestsData=data;
@@ -113,8 +126,17 @@ const Summary = {
       },
 
       async loadRatingsChart(){
-        const url=window.location.origin;
-        const result=await fetch(url + '/summary/ratingschartdata');
+        let url=window.location.origin;
+        if(this.role==='admin'){
+          url=url+`/summary/servicerequestsdata`
+        }
+        if(this.role==='professional'){
+          url=url+`/summary/servicerequestsdata/professional/${this.professonalId}`
+        }
+        if(this.role==='customer'){
+          url=url+`/summary/servicerequestsdata/customer/${this.customerId}`
+        }
+        const result=await fetch(url);
         if(result.ok){
           const data=await result.json();
           this.ratingsData=data;
