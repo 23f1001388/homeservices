@@ -2,3 +2,18 @@
 Set-ExecutionPolicy -Scope Process Unrestricted
 #For Activating Virtual Environment
 .\.venv\Scripts\Activate
+
+
+flask
+flask_sqlalchemy
+flask_security_too
+flask_RESTful
+celery
+redis
+flask-caching
+argon2_cffi
+requests
+python-dotenv
+flask_cors
+flask-Mail
+flask_excel
